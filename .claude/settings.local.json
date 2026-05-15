@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(superpowers:brainstorming)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\pc\\\\OneDrive\\\\Documents\\\\Claude\\\\Projects\\\\Monolith Studio\\\\Tools\\\\proposly\" -Recurse -Force)",
+      "Bash(Select-Object FullName)",
+      "Bash(Sort-Object FullName)",
+      "Bash(dir \"C:\\\\Users\\\\pc\\\\OneDrive\\\\Documents\\\\Claude\\\\Projects\\\\Monolith Studio\\\\Tools\\\\proposly\\\\reference\")",
+      "Bash(New-Item -ItemType Directory -Force -Path \"C:\\\\Users\\\\pc\\\\.claude\\\\projects\\\\C--Users-pc\\\\memory\")",
+      "Bash(Out-Null)",
+      "Bash(Write-Output \"done\")",
+      "Bash(npm create *)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(npm install *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5174/)",
+      "mcp__plugin_ecc_playwright__browser_navigate",
+      "PowerShell(try { $r = Invoke-WebRequest -Uri \"http://localhost:5174/\" -UseBasicParsing; $r.StatusCode } catch { \"down\" })",
+      "PowerShell(Copy-Item *)",
+      "PowerShell(New-Item *)"
+    ]
+  }
+}
