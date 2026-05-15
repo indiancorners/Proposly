@@ -1,4 +1,4 @@
-﻿node_modules/
+node_modules/
 dist/
 dist-ssr/
 *.local
@@ -8,3 +8,13 @@ dist-ssr/
 .DS_Store
 Thumbs.db
 *.log
+
+# AI tooling
+ruvector.db
+.claude/
+
+# Design reference images (not needed in repo)
+reference/
+
+# Root source assets (redundant with public/)
+1_logo.png
