@@ -4,8 +4,11 @@ import { ThemePickerStep } from '@/wizard/ThemePickerStep'
 import { FormStep } from '@/wizard/FormStep'
 import { ReviewStep } from '@/wizard/ReviewStep'
 import { Button } from '@/ui/Button'
+import { Spinner } from '@/ui/Spinner'
 import { useWizardStore } from '@/hooks/useWizardStore'
+import { useProposal } from '@/hooks/useProposal'
 import { useProposlyPro } from '@/hooks/useProposlyPro'
+import type { ProposalData } from '@/types'
 import { clsx } from 'clsx'
 
 const STEPS = [
@@ -16,6 +19,33 @@ const STEPS = [
 
 export function WizardPage() {
   const { id } = useParams()
+  if (id) return <WizardEdit id={id} />
+  return <WizardContent />
+}
+
+function WizardEdit({ id }: { id: string }) {
+  const { proposal, isLoading, error } = useProposal(id)
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Spinner />
+      </div>
+    )
+  }
+
+  if (error || !proposal) {
+    return (
+      <div className="flex h-full items-center justify-center text-sm" style={{ color: '#6E6E73' }}>
+        Could not load proposal.
+      </div>
+    )
+  }
+
+  return <WizardContent initialProposal={proposal} />
+}
+
+function WizardContent({ initialProposal }: { initialProposal?: ProposalData }) {
   const { isPro } = useProposlyPro()
   const {
     step,
@@ -27,9 +57,7 @@ export function WizardPage() {
     updateSection,
     toggleSection,
     saveProposal,
-  } = useWizardStore()
-
-  const isEdit = Boolean(id)
+  } = useWizardStore(initialProposal)
 
   const stepIndicator = (
     <div className="flex items-center gap-1">
@@ -42,8 +70,8 @@ export function WizardPage() {
               step === s.id
                 ? 'bg-accent text-white'
                 : step > s.id
-                  ? 'text-accent hover:underline cursor-pointer'
-                  : 'text-placeholder cursor-default'
+                ? 'text-accent hover:underline cursor-pointer'
+                : 'text-placeholder cursor-default'
             )}
           >
             {s.label}
@@ -57,14 +85,9 @@ export function WizardPage() {
   return (
     <ProposalEditorLayout isSaving={isSaving} stepIndicator={stepIndicator}>
       <div className="flex flex-col h-full">
-        {/* Main content area */}
         <div className="flex-1 overflow-auto p-6">
           {step === 1 && (
-            <ThemePickerStep
-              selected={proposal.theme}
-              isPro={isPro}
-              onSelect={setTheme}
-            />
+            <ThemePickerStep selected={proposal.theme} isPro={isPro} onSelect={setTheme} />
           )}
           {step === 2 && (
             <FormStep
@@ -84,7 +107,6 @@ export function WizardPage() {
           )}
         </div>
 
-        {/* Bottom nav */}
         {step < 3 && (
           <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-t border-border bg-surface">
             <Button
@@ -94,9 +116,7 @@ export function WizardPage() {
             >
               Back
             </Button>
-            <Button
-              onClick={() => setStep((step + 1) as 1 | 2 | 3)}
-            >
+            <Button onClick={() => setStep((step + 1) as 1 | 2 | 3)}>
               {step === 2 ? 'Review →' : 'Next →'}
             </Button>
           </div>

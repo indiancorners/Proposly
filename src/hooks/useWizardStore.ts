@@ -1,8 +1,10 @@
-﻿import { useState, useCallback } from 'react'
+﻿import { useState, useCallback, useEffect, useRef } from 'react'
 import type { ProposalData, ThemeId, SectionData, SectionType } from '@/types'
 import { ProposalStatus, ProposalCategory } from '@/types'
 import { createEmptySections } from '@/constants/defaultData'
 import { CATEGORY_SECTION_DEFAULTS } from '@/constants/sections'
+import { createProposal, updateProposal } from '@/services/proposalService'
+import { MOCK_USER_ID } from '@/lib/mockUser'
 
 export type WizardStepId = 1 | 2 | 3
 
@@ -15,7 +17,7 @@ interface WizardState {
 
 const INITIAL_PROPOSAL: ProposalData = {
   id: '',
-  userId: 'mock-user',
+  userId: MOCK_USER_ID,
   status: ProposalStatus.Draft,
   category: ProposalCategory.General,
   theme: 'folio',
@@ -32,6 +34,32 @@ export function useWizardStore(initialProposal?: ProposalData) {
     isDirty: false,
     isSaving: false,
   })
+
+  const proposalRef = useRef(state.proposal)
+  proposalRef.current = state.proposal
+
+  // Auto-save: 2s debounce after any change, only when proposal is persisted (has id)
+  useEffect(() => {
+    if (!state.isDirty || !state.proposal.id) return
+
+    const timer = setTimeout(async () => {
+      setState((prev) => ({ ...prev, isSaving: true }))
+      try {
+        const saved = await updateProposal(proposalRef.current)
+        setState((prev) => ({
+          ...prev,
+          isSaving: false,
+          isDirty: false,
+          proposal: { ...prev.proposal, updatedAt: saved.updatedAt },
+        }))
+      } catch (err) {
+        setState((prev) => ({ ...prev, isSaving: false }))
+        console.error('Auto-save failed:', err)
+      }
+    }, 2000)
+
+    return () => clearTimeout(timer)
+  }, [state.isDirty, state.proposal])
 
   const setStep = useCallback((step: WizardStepId) => {
     setState((prev) => ({ ...prev, step }))
@@ -66,7 +94,7 @@ export function useWizardStore(initialProposal?: ProposalData) {
         ...prev.proposal,
         updatedAt: new Date().toISOString(),
         sections: prev.proposal.sections.map((s) =>
-          s.type === type ? { ...s, data } as SectionData : s
+          s.type === type ? ({ ...s, data } as SectionData) : s
         ),
       },
     }))
@@ -81,7 +109,6 @@ export function useWizardStore(initialProposal?: ProposalData) {
         const newSection = createEmptySections(prev.proposal.category).find((s) => s.type === type)
         if (!newSection) return prev
 
-        // Insert at canonical position from category defaults
         const targetIndex = categoryDefaults.indexOf(type)
         const newSections = [...prev.proposal.sections]
         let insertAt = newSections.length
@@ -115,11 +142,19 @@ export function useWizardStore(initialProposal?: ProposalData) {
     })
   }, [])
 
-  const saveProposal = useCallback(async (): Promise<void> => {
+  const saveProposal = useCallback(async (): Promise<ProposalData> => {
     setState((prev) => ({ ...prev, isSaving: true }))
-    // Phase 2: call proposalService.saveProposal(state.proposal)
-    await new Promise((r) => setTimeout(r, 600))
-    setState((prev) => ({ ...prev, isSaving: false, isDirty: false }))
+    try {
+      const isNew = !proposalRef.current.id
+      const saved = isNew
+        ? await createProposal(proposalRef.current)
+        : await updateProposal(proposalRef.current)
+      setState((prev) => ({ ...prev, isSaving: false, isDirty: false, proposal: saved }))
+      return saved
+    } catch (err) {
+      setState((prev) => ({ ...prev, isSaving: false }))
+      throw err
+    }
   }, [])
 
   return {
