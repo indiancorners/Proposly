@@ -1,15 +1,39 @@
-﻿import type { CoverData } from '@/types'
+﻿import { useThemeCtx } from '../ThemeContext'
+import type { CoverData } from '@/types'
 
 interface CoverSectionProps {
   data: CoverData
 }
 
 export function CoverSection({ data }: CoverSectionProps) {
+  const { layoutVariant } = useThemeCtx()
+  const isBauhaus = layoutVariant === 'bauhaus'
+
   return (
     <div
       className="w-full min-h-[300px] flex flex-col justify-between p-12"
-      style={{ background: 'var(--t-cover-bg)' }}
+      style={{ background: 'var(--t-cover-bg)', position: 'relative', overflow: 'hidden' }}
     >
+      {isBauhaus && (
+        <span
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            left: '2rem',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            fontSize: 200,
+            fontWeight: 900,
+            lineHeight: 1,
+            color: '#FFFFFF',
+            opacity: 0.06,
+            pointerEvents: 'none',
+            userSelect: 'none',
+          }}
+        >
+          01
+        </span>
+      )}
       <div>
         <p
           className="text-sm font-semibold uppercase tracking-[0.15em] mb-1"

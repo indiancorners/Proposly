@@ -1,4 +1,5 @@
-﻿import { useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { useUser } from '@clerk/clerk-react'
 import { ProposalEditorLayout } from '@/layouts/ProposalEditorLayout'
 import { ThemePickerStep } from '@/wizard/ThemePickerStep'
 import { FormStep } from '@/wizard/FormStep'
@@ -20,10 +21,16 @@ const STEPS = [
 export function WizardPage() {
   const { id } = useParams()
   if (id) return <WizardEdit id={id} />
-  return <WizardContent />
+  return <WizardCreate />
+}
+
+function WizardCreate() {
+  const { user } = useUser()
+  return <WizardContent userId={user?.id ?? ''} />
 }
 
 function WizardEdit({ id }: { id: string }) {
+  const { user } = useUser()
   const { proposal, isLoading, error } = useProposal(id)
 
   if (isLoading) {
@@ -42,10 +49,16 @@ function WizardEdit({ id }: { id: string }) {
     )
   }
 
-  return <WizardContent initialProposal={proposal} />
+  return <WizardContent initialProposal={proposal} userId={user?.id ?? ''} />
 }
 
-function WizardContent({ initialProposal }: { initialProposal?: ProposalData }) {
+function WizardContent({
+  initialProposal,
+  userId,
+}: {
+  initialProposal?: ProposalData
+  userId: string
+}) {
   const { isPro } = useProposlyPro()
   const {
     step,
@@ -57,7 +70,7 @@ function WizardContent({ initialProposal }: { initialProposal?: ProposalData }) 
     updateSection,
     toggleSection,
     saveProposal,
-  } = useWizardStore(initialProposal)
+  } = useWizardStore(initialProposal, userId)
 
   const stepIndicator = (
     <div className="flex items-center gap-1">

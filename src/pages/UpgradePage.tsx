@@ -1,4 +1,5 @@
 ﻿import { Check } from 'lucide-react'
+import { useUser } from '@clerk/clerk-react'
 import { Button } from '@/ui/Button'
 import { generateCheckoutUrl } from '@/lib/lemonsqueezy'
 
@@ -14,8 +15,12 @@ const FEATURES = [
 ]
 
 export function UpgradePage() {
+  const { user } = useUser()
+
   function handleUpgrade() {
-    const url = generateCheckoutUrl('demo@studio.co', 'mock-user')
+    const email = user?.primaryEmailAddress?.emailAddress ?? ''
+    const userId = user?.id ?? ''
+    const url = generateCheckoutUrl(email, userId)
     window.open(url, '_blank')
   }
 

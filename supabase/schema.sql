@@ -32,7 +32,32 @@ CREATE TRIGGER proposals_updated_at
 CREATE INDEX IF NOT EXISTS proposals_user_id_idx ON proposals (user_id);
 CREATE INDEX IF NOT EXISTS proposals_updated_at_idx ON proposals (updated_at DESC);
 
--- NOTE: No RLS in Phase 2. Phase 3 (Clerk) adds:
---   ALTER TABLE proposals ENABLE ROW LEVEL SECURITY;
---   CREATE POLICY "users_own_proposals" ON proposals
---     USING (auth.uid()::text = user_id::text);
+-- ─── Phase 3 additions (already run via SQL Editor) ──────────────────────────
+-- ALTER TABLE proposals ALTER COLUMN user_id TYPE TEXT;
+--
+-- CREATE TABLE IF NOT EXISTS profiles (
+--   id               TEXT        PRIMARY KEY,
+--   email            TEXT,
+--   is_pro           BOOLEAN     NOT NULL DEFAULT false,
+--   studio_name      TEXT        NOT NULL DEFAULT '',
+--   default_currency TEXT        NOT NULL DEFAULT 'USD',
+--   default_terms    TEXT        NOT NULL DEFAULT '',
+--   created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+--   updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+-- );
+-- DROP TRIGGER IF EXISTS profiles_updated_at ON profiles;
+-- CREATE TRIGGER profiles_updated_at
+--   BEFORE UPDATE ON profiles
+--   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+--
+-- NOTE: RLS skipped — app-level user_id filtering used.
+-- Phase 5+ adds Clerk JWT template + Supabase RLS policies.
+
+-- ─── Phase 4: shared_links (run in Supabase SQL Editor) ──────────────────────
+CREATE TABLE IF NOT EXISTS shared_links (
+  id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  proposal_id UUID        NOT NULL REFERENCES proposals(id) ON DELETE CASCADE,
+  view_count  INTEGER     NOT NULL DEFAULT 0,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS shared_links_proposal_id_idx ON shared_links (proposal_id);

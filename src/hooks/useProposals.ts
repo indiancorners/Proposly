@@ -1,23 +1,25 @@
-﻿import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { useUser } from '@clerk/clerk-react'
 import type { ProposalSummary } from '@/types'
 import {
   getProposals,
   deleteProposal as dbDelete,
   updateProposalStatus,
 } from '@/services/proposalService'
-import { MOCK_USER_ID } from '@/lib/mockUser'
 
 export function useProposals() {
+  const { user, isLoaded } = useUser()
   const [proposals, setProposals] = useState<ProposalSummary[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    if (!isLoaded || !user) return
     setIsLoading(true)
-    getProposals(MOCK_USER_ID)
+    getProposals(user.id)
       .then(setProposals)
       .catch(console.error)
       .finally(() => setIsLoading(false))
-  }, [])
+  }, [isLoaded, user?.id])
 
   const deleteProposal = useCallback(async (id: string) => {
     setProposals((prev) => prev.filter((p) => p.id !== id))

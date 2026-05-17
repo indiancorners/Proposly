@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Check, FileText, Eye, Download, BarChart3, Link2, Zap, ArrowRight } from 'lucide-react'
 import { themeList, themeRegistry } from '@/constants/themes'
 import { LandingTemplateThumbnail } from '@/pages/LandingTemplateThumbnail'
+import { TemplatePreviewModal } from '@/pages/TemplatePreviewModal'
 import type { ThemeId } from '@/types'
 
 const ease = [0.16, 1, 0.3, 1] as const
@@ -39,6 +40,8 @@ export function LandingPage() {
   const navigate = useNavigate()
   const [activeTpl, setActiveTpl] = useState<ThemeId>('signal')
   const activeTheme = themeRegistry[activeTpl]
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [previewTheme, setPreviewTheme] = useState<ThemeId>('folio')
   return (
     <div className="bg-white overflow-x-hidden">
 
@@ -166,15 +169,25 @@ export function LandingPage() {
                   )}
 
                   {activeTheme.tier === 'free' ? (
-                    <button onClick={() => navigate('/app/create')} className="inline-flex items-center gap-2 rounded-full font-semibold transition-opacity hover:opacity-85 group" style={{ height: '48px', padding: '0 28px', background: 'white', color: '#1D1D1F', fontSize: '14px' }}>
-                      Start with Folio — free
-                      <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform duration-200" />
-                    </button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <button onClick={() => navigate('/app/create')} className="inline-flex items-center gap-2 rounded-full font-semibold transition-opacity hover:opacity-85 group" style={{ height: '48px', padding: '0 28px', background: 'white', color: '#1D1D1F', fontSize: '14px', border: 'none', cursor: 'pointer' }}>
+                        Start with Folio — free
+                        <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform duration-200" />
+                      </button>
+                      <button onClick={() => { setPreviewTheme(activeTpl); setPreviewOpen(true) }} className="inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-opacity hover:opacity-80" style={{ height: '44px', padding: '0 24px', background: 'transparent', color: 'white', fontSize: '14px', border: '1px solid rgba(255,255,255,0.25)', cursor: 'pointer' }}>
+                        <Eye size={14} />
+                        Preview full proposal
+                      </button>
+                    </div>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      <button onClick={() => navigate('/app/upgrade')} className="inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-opacity hover:opacity-85 group" style={{ height: '48px', padding: '0 28px', background: 'white', color: '#1D1D1F', fontSize: '14px', width: '100%' }}>
+                      <button onClick={() => navigate('/app/upgrade')} className="inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-opacity hover:opacity-85 group" style={{ height: '48px', padding: '0 28px', background: '#2563EB', color: 'white', fontSize: '14px', width: '100%', border: 'none', cursor: 'pointer' }}>
                         Get Pro — $20 once
                         <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform duration-200" />
+                      </button>
+                      <button onClick={() => { setPreviewTheme(activeTpl); setPreviewOpen(true) }} className="inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-opacity hover:opacity-80" style={{ height: '44px', padding: '0 24px', background: 'white', color: '#1D1D1F', fontSize: '14px', width: '100%', border: 'none', cursor: 'pointer' }}>
+                        <Eye size={14} />
+                        Preview full proposal
                       </button>
                       <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}>
                         Already Pro?{' '}
@@ -216,7 +229,7 @@ export function LandingPage() {
               Three steps.<br />One great proposal.
             </h2>
           </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-3" style={{ border: '1px solid #D2D2D7' }}>
+          <div className="grid grid-cols-1 md:grid-cols-3" style={{ border: '1px solid #D2D2D7', borderRadius: '20px', overflow: 'hidden' }}>
             {STEPS.map((step, i) => (
               <motion.div key={step.num} {...fadeUp(i * 0.1)} className="p-10 flex flex-col" style={{ borderRight: i < 2 ? '1px solid #D2D2D7' : undefined }}>
                 <p className="font-extrabold mb-8 leading-none select-none" style={{ fontSize: '72px', letterSpacing: '-0.04em', color: '#F5F5F7' }}>{step.num}</p>
@@ -328,6 +341,11 @@ export function LandingPage() {
         </div>
       </section>
 
+      <TemplatePreviewModal
+        isOpen={previewOpen}
+        initialThemeId={previewTheme}
+        onClose={() => setPreviewOpen(false)}
+      />
     </div>
   )
 }

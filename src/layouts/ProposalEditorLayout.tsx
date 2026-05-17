@@ -10,7 +10,7 @@ interface ProposalEditorLayoutProps {
 
 export function ProposalEditorLayout({ children, isSaving, stepIndicator }: ProposalEditorLayoutProps) {
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-dvh">
       {/* Editor top bar */}
       <header className="h-14 flex-shrink-0 flex items-center justify-between px-6 bg-surface border-b border-border">
         <div className="flex items-center gap-4">

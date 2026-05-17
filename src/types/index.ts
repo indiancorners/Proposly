@@ -18,6 +18,8 @@ export enum ProposalCategory {
 
 export type ThemeId = 'folio' | 'dusk' | 'signal' | 'verso' | 'cipher'
 
+export type LayoutVariant = 'editorial' | 'luxury' | 'swiss' | 'bauhaus' | 'dashboard' | 'default'
+
 export interface ThemeConfig {
   id: ThemeId
   name: string
@@ -26,6 +28,7 @@ export interface ThemeConfig {
   cssVars: Record<string, string>
   hasAlternatingSections: boolean
   hasWatermark: boolean
+  layoutVariant: LayoutVariant
 }
 
 // ─── Section Types ─────────────────────────────────────────────────────────────

@@ -1,10 +1,9 @@
-﻿import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import type { ProposalData, ThemeId, SectionData, SectionType } from '@/types'
 import { ProposalStatus, ProposalCategory } from '@/types'
 import { createEmptySections } from '@/constants/defaultData'
 import { CATEGORY_SECTION_DEFAULTS } from '@/constants/sections'
 import { createProposal, updateProposal } from '@/services/proposalService'
-import { MOCK_USER_ID } from '@/lib/mockUser'
 
 export type WizardStepId = 1 | 2 | 3
 
@@ -15,32 +14,37 @@ interface WizardState {
   isSaving: boolean
 }
 
-const INITIAL_PROPOSAL: ProposalData = {
-  id: '',
-  userId: MOCK_USER_ID,
-  status: ProposalStatus.Draft,
-  category: ProposalCategory.General,
-  theme: 'folio',
-  sections: createEmptySections(ProposalCategory.General),
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  sharedLinkId: null,
+function makeInitialProposal(userId: string): ProposalData {
+  return {
+    id: '',
+    userId,
+    status: ProposalStatus.Draft,
+    category: ProposalCategory.General,
+    theme: 'folio',
+    sections: createEmptySections(ProposalCategory.General),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    sharedLinkId: null,
+  }
 }
 
-export function useWizardStore(initialProposal?: ProposalData) {
-  const [state, setState] = useState<WizardState>({
+export function useWizardStore(initialProposal?: ProposalData, userId = '') {
+  const [state, setState] = useState<WizardState>(() => ({
     step: 1,
-    proposal: initialProposal ?? INITIAL_PROPOSAL,
+    proposal: initialProposal ?? makeInitialProposal(userId),
     isDirty: false,
     isSaving: false,
-  })
+  }))
 
   const proposalRef = useRef(state.proposal)
   proposalRef.current = state.proposal
 
   // Auto-save: 2s debounce after any change, only when proposal is persisted (has id)
+  // Depend only on isDirty + proposal.id — proposalRef carries the latest data without
+  // causing the effect to restart every time setState mutates other fields (isSaving, updatedAt).
+  const proposalId = state.proposal.id
   useEffect(() => {
-    if (!state.isDirty || !state.proposal.id) return
+    if (!state.isDirty || !proposalId) return
 
     const timer = setTimeout(async () => {
       setState((prev) => ({ ...prev, isSaving: true }))
@@ -59,7 +63,7 @@ export function useWizardStore(initialProposal?: ProposalData) {
     }, 2000)
 
     return () => clearTimeout(timer)
-  }, [state.isDirty, state.proposal])
+  }, [state.isDirty, proposalId])
 
   const setStep = useCallback((step: WizardStepId) => {
     setState((prev) => ({ ...prev, step }))

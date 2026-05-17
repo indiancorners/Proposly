@@ -1,4 +1,5 @@
 ﻿import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
+import { AuthenticateWithRedirectCallback } from '@clerk/clerk-react'
 import { RootLayout } from '@/layouts/RootLayout'
 import { AppLayout } from '@/layouts/AppLayout'
 import { PublicLayout } from '@/layouts/PublicLayout'
@@ -10,6 +11,8 @@ import { SettingsPage } from '@/pages/SettingsPage'
 import { UpgradePage } from '@/pages/UpgradePage'
 import { UpgradeSuccessPage } from '@/pages/UpgradeSuccessPage'
 import { PublicProposalView } from '@/pages/PublicProposalView'
+import { SignInPage } from '@/pages/SignInPage'
+import { SignUpPage } from '@/pages/SignUpPage'
 
 const router = createBrowserRouter([
   {
@@ -18,6 +21,23 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <PublicLayout><LandingPage /></PublicLayout>,
+      },
+      {
+        path: '/sign-in',
+        element: <SignInPage />,
+      },
+      {
+        path: '/sign-up',
+        element: <SignUpPage />,
+      },
+      {
+        path: '/sso-callback',
+        element: (
+          <AuthenticateWithRedirectCallback
+            signInForceRedirectUrl="/app"
+            signUpForceRedirectUrl="/app"
+          />
+        ),
       },
       {
         path: '/share/:linkId',

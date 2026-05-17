@@ -1,24 +1,41 @@
-﻿import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useUser } from '@clerk/clerk-react'
+import { getProfile, upsertProfile } from '@/services/profileService'
 
 export interface ProposlyProState {
   isPro: boolean
-  proposalCount: number
   isAtLimit: boolean
   canExport: boolean
   canShare: boolean
   canUseProTemplate: boolean
 }
 
-// Phase 3+: fetch from Supabase profiles
-// Phase 1: always free user with 2 mock proposals
-export function useProposlyPro(): ProposlyProState {
-  const [isPro] = useState(false)
-  const [proposalCount] = useState(2)
+const FREE_PROPOSAL_LIMIT = 3
+
+export function useProposlyPro(proposalCount = 0): ProposlyProState {
+  const { user, isLoaded } = useUser()
+  const [isPro, setIsPro] = useState(false)
+
+  useEffect(() => {
+    if (!isLoaded || !user) return
+
+    getProfile(user.id)
+      .then((profile) => {
+        if (!profile) {
+          upsertProfile({
+            id: user.id,
+            email: user.primaryEmailAddress?.emailAddress,
+          }).catch(console.error)
+        } else {
+          setIsPro(profile.isPro)
+        }
+      })
+      .catch(console.error)
+  }, [isLoaded, user?.id])
 
   return {
     isPro,
-    proposalCount,
-    isAtLimit: !isPro && proposalCount >= 1,
+    isAtLimit: !isPro && proposalCount >= FREE_PROPOSAL_LIMIT,
     canExport: isPro,
     canShare: isPro,
     canUseProTemplate: isPro,

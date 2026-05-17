@@ -8,6 +8,7 @@ export const themeRegistry: Record<string, ThemeConfig> = {
     description: 'Warm, editorial. Classic agency feel.',
     hasAlternatingSections: false,
     hasWatermark: false,
+    layoutVariant: 'editorial' as const,
     cssVars: {
       '--t-bg-primary': '#FAF8F3',
       '--t-bg-secondary': '#F0EDE6',
@@ -33,6 +34,7 @@ export const themeRegistry: Record<string, ThemeConfig> = {
     description: 'Dark & premium. For high-ticket work.',
     hasAlternatingSections: false,
     hasWatermark: false,
+    layoutVariant: 'luxury' as const,
     cssVars: {
       '--t-bg-primary': '#111014',
       '--t-bg-secondary': '#1A1820',
@@ -58,6 +60,7 @@ export const themeRegistry: Record<string, ThemeConfig> = {
     description: 'Clean iOS-inspired. Modern and precise.',
     hasAlternatingSections: false,
     hasWatermark: false,
+    layoutVariant: 'swiss' as const,
     cssVars: {
       '--t-bg-primary': '#FFFFFF',
       '--t-bg-secondary': '#F2F2F7',
@@ -83,6 +86,7 @@ export const themeRegistry: Record<string, ThemeConfig> = {
     description: 'Editorial. Black-and-white impact.',
     hasAlternatingSections: true,
     hasWatermark: false,
+    layoutVariant: 'bauhaus' as const,
     cssVars: {
       '--t-bg-primary': '#FFFFFF',
       '--t-bg-secondary': '#111111',
@@ -108,6 +112,7 @@ export const themeRegistry: Record<string, ThemeConfig> = {
     description: 'Tech-forward. Stripe-inspired precision.',
     hasAlternatingSections: false,
     hasWatermark: true,
+    layoutVariant: 'dashboard' as const,
     cssVars: {
       '--t-bg-primary': '#FAFAFA',
       '--t-bg-secondary': '#F4F4F8',

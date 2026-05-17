@@ -1,10 +1,12 @@
-﻿import { Button } from '@/ui/Button'
+import { useState } from 'react'
+import { Button } from '@/ui/Button'
 import { ProGateOverlay } from './ProGateOverlay'
 import { Download, Share2, Save, ImageIcon } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import type { RefObject } from 'react'
 import type { ProposalData } from '@/types'
-import { exportToPDF } from '@/lib/exportService'
+import { exportToPDF, exportToPNG } from '@/lib/exportService'
+import { createSharedLink } from '@/services/shareService'
 
 interface ExportPanelProps {
   exportRef: RefObject<HTMLElement | null>
@@ -22,6 +24,46 @@ export function ExportPanel({ exportRef, proposal, isPro, isSaving, onSave }: Ex
     clientName: cover?.type === 'cover' ? cover.data.clientName : 'Client',
   }
 
+  type ShareState = 'idle' | 'loading' | 'copied' | 'error'
+  const [shareState, setShareState] = useState<ShareState>('idle')
+  const [localSharedLinkId, setLocalSharedLinkId] = useState<string | null>(
+    proposal.sharedLinkId ?? null
+  )
+
+  const shareLabelMap: Record<ShareState, string> = {
+    idle: 'Share Link',
+    loading: 'Creating link…',
+    copied: 'Link Copied!',
+    error: 'Error — try again',
+  }
+
+  async function handleShare() {
+    if (!proposal.id) {
+      alert('Save the proposal first before sharing')
+      return
+    }
+
+    const effectiveId = localSharedLinkId ?? proposal.sharedLinkId
+
+    try {
+      let linkId: string
+      if (effectiveId) {
+        linkId = effectiveId
+      } else {
+        setShareState('loading')
+        const link = await createSharedLink(proposal.id)
+        setLocalSharedLinkId(link.id)
+        linkId = link.id
+      }
+
+      await navigator.clipboard.writeText(`${window.location.origin}/share/${linkId}`)
+      setShareState('copied')
+      setTimeout(() => setShareState('idle'), 2000)
+    } catch {
+      setShareState('error')
+    }
+  }
+
   return (
     <div className="flex flex-col gap-3 p-4 bg-surface border border-border rounded-2xl shadow-sm">
       <Button
@@ -35,7 +77,7 @@ export function ExportPanel({ exportRef, proposal, isPro, isSaving, onSave }: Ex
       </Button>
 
       <div className="relative overflow-hidden">
-        <Button variant="secondary" className="w-full" onClick={() => {}}>
+        <Button variant="secondary" className="w-full" onClick={() => exportToPNG(exportRef, meta)}>
           <ImageIcon className="h-4 w-4" />
           Download PNG
         </Button>
@@ -43,9 +85,14 @@ export function ExportPanel({ exportRef, proposal, isPro, isSaving, onSave }: Ex
       </div>
 
       <div className="relative overflow-hidden">
-        <Button variant="secondary" className="w-full" onClick={() => {}}>
+        <Button
+          variant="secondary"
+          className="w-full"
+          onClick={handleShare}
+          disabled={shareState === 'loading'}
+        >
           <Share2 className="h-4 w-4" />
-          Share Link
+          {shareLabelMap[shareState]}
         </Button>
         {!isPro && <ProGateOverlay feature="Share links require Pro" />}
       </div>

@@ -14,7 +14,7 @@ export function DashboardPage() {
   const navigate = useNavigate()
   const { proposals, deleteProposal, updateStatus } = useProposals()
   const stats = useDashboardStats(proposals)
-  const { isPro, isAtLimit } = useProposlyPro()
+  const { isPro, isAtLimit } = useProposlyPro(proposals.length)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<ProposalStatus | 'all'>('all')
 

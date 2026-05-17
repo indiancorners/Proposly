@@ -16,7 +16,7 @@ export function AppSidebar({ isPro }: AppSidebarProps) {
 
   return (
     <aside
-      className="w-60 h-screen flex-shrink-0 flex flex-col"
+      className="w-60 h-dvh flex-shrink-0 flex flex-col"
       style={{ background: '#FFFFFF', borderRight: '1px solid #D2D2D7' }}
     >
       {/* Logo — links back to homepage */}
