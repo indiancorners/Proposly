@@ -58,49 +58,17 @@ export async function deleteSharedLink(linkId: string): Promise<void> {
   if (error) throw error
 }
 
-// ─── incrementViewCount — fire-and-forget helper ──────────────────────────────
-// Supabase JS client doesn't support column expressions (view_count + 1) directly.
-// We fetch current count and write back. Acceptable for low-traffic public views.
-
-async function incrementViewCount(linkId: string): Promise<void> {
-  const { data } = await supabase
-    .from('shared_links')
-    .select('view_count')
-    .eq('id', linkId)
-    .single()
-  if (!data) return
-  await supabase
-    .from('shared_links')
-    .update({ view_count: (data.view_count as number) + 1 })
-    .eq('id', linkId)
-}
-
 // ─── getProposalByLink ────────────────────────────────────────────────────────
+// Public share reads run as the anon role, which RLS blocks from reading proposals
+// directly. The `get_shared_proposal` SECURITY DEFINER RPC (see supabase/rls.sql)
+// resolves the link, atomically bumps view_count, and returns the proposal row.
 
 export async function getProposalByLink(linkId: string): Promise<ProposalData | null> {
-  // 1. Resolve link → proposal_id
-  const { data: linkRow, error: linkError } = await supabase
-    .from('shared_links')
-    .select('proposal_id')
-    .eq('id', linkId)
-    .single()
+  const { data, error } = await supabase.rpc('get_shared_proposal', {
+    link_id: linkId,
+  })
 
-  if (linkError) {
-    if (linkError.code === 'PGRST116') return null
-    throw linkError
-  }
-
-  // 2. Increment view count — fire-and-forget, never blocks or fails the render
-  incrementViewCount(linkId).catch(() => {})
-
-  // 3. Fetch the proposal
-  const proposalId = (linkRow as { proposal_id: string }).proposal_id
-  const { data: proposalRow, error: proposalError } = await supabase
-    .from('proposals')
-    .select('*')
-    .eq('id', proposalId)
-    .single()
-
-  if (proposalError) throw proposalError
-  return rowToProposal(proposalRow as DbRow)
+  if (error) throw error
+  if (!data) return null
+  return rowToProposal(data as DbRow)
 }

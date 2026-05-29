@@ -1,6 +1,6 @@
-import type { Appearance } from '@clerk/clerk-react'
-
-export const clerkAppearance: Appearance = {
+// Typed structurally by its consumer (<ClerkProvider appearance={…}>). Clerk does
+// not re-export the `Appearance` type from @clerk/clerk-react in this version.
+export const clerkAppearance = {
   variables: {
     colorPrimary: '#1D1D1F',
     colorBackground: '#FFFFFF',

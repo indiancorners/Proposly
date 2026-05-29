@@ -115,7 +115,9 @@ function WizardContent({
               proposal={proposal}
               isPro={isPro}
               isSaving={isSaving}
-              onSave={saveProposal}
+              onSave={async () => {
+                await saveProposal()
+              }}
             />
           )}
         </div>
