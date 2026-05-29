@@ -69,6 +69,8 @@ export async function getProposalByLink(linkId: string): Promise<ProposalData | 
   })
 
   if (error) throw error
-  if (!data) return null
+  // RETURNS proposals expands a no-match into a row of null columns rather than SQL
+  // NULL, so check the primary key to distinguish "found" from "link doesn't exist".
+  if (!data || !(data as DbRow).id) return null
   return rowToProposal(data as DbRow)
 }
