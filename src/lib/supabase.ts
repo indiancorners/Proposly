@@ -1,10 +1,13 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Trim defensively: env values pasted into hosting dashboards (Vercel, etc.) often
-// pick up a trailing newline/space, which makes the apikey/Authorization header
-// value illegal ("Failed to execute 'set' on 'Headers': Invalid value").
-const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL as string)?.trim()
-const SUPABASE_ANON_KEY = (import.meta.env.VITE_SUPABASE_ANON_KEY as string)?.trim()
+// Strip ALL whitespace, not just the ends: env values pasted into hosting
+// dashboards (Vercel, etc.) can pick up a newline in the MIDDLE of a long value
+// (the field wraps), which makes the apikey/Authorization header illegal
+// ("Failed to execute 'set' on 'Headers': Invalid value"). JWTs and URLs never
+// contain whitespace, so this is safe and self-healing against a bad paste.
+const stripWs = (v?: string) => v?.replace(/\s+/g, '') ?? ''
+const SUPABASE_URL = stripWs(import.meta.env.VITE_SUPABASE_URL as string)
+const SUPABASE_ANON_KEY = stripWs(import.meta.env.VITE_SUPABASE_ANON_KEY as string)
 
 // Clerk attaches its singleton to `window.Clerk` once <ClerkProvider> mounts.
 // We read the active session token on every request so Supabase RLS can identify
@@ -19,6 +22,6 @@ declare global {
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   accessToken: async () => {
     const token = await window.Clerk?.session?.getToken()
-    return token ? token.trim() : null
+    return token ? stripWs(token) : null
   },
 })
