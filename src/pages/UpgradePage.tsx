@@ -1,8 +1,11 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Check, ArrowRight, ShieldCheck, Lock, Infinity as InfinityIcon } from 'lucide-react'
+import { Check, ArrowRight, ShieldCheck, Lock, Infinity as InfinityIcon, Sparkles } from 'lucide-react'
 import { useUser } from '@clerk/clerk-react'
 import { toast } from 'sonner'
+import { Spinner } from '@/ui/Spinner'
+import { useProposlyPro } from '@/hooks/useProposlyPro'
 import { generateCheckoutUrl } from '@/lib/lemonsqueezy'
 
 const ease = [0.16, 1, 0.3, 1] as const
@@ -34,7 +37,58 @@ const GUARANTEES = [
 
 export function UpgradePage() {
   const { user } = useUser()
+  const { isPro, isLoading } = useProposlyPro()
   const [loading, setLoading] = useState(false)
+
+  // Don't flash the buy card before we know the user's tier.
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <Spinner />
+      </div>
+    )
+  }
+
+  // Already Pro — show confirmation instead of the purchase card.
+  if (isPro) {
+    return (
+      <div className="relative px-4 sm:px-8 py-12 sm:py-20">
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse 70% 50% at 50% -10%, rgba(48,209,88,0.10) 0%, transparent 65%)' }}
+        />
+        <motion.div className="relative max-w-md mx-auto text-center" {...fadeUp(0)}>
+          <div
+            className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6"
+            style={{ background: '#1D1D1F' }}
+          >
+            <Sparkles className="h-6 w-6" style={{ color: '#FFFFFF' }} />
+          </div>
+          <p className="text-[11px] font-semibold uppercase tracking-widest mb-4" style={{ color: '#86868B' }}>
+            Pro · Lifetime
+          </p>
+          <h1
+            className="font-bold mb-3"
+            style={{ fontSize: 'clamp(30px, 5vw, 42px)', letterSpacing: '-0.035em', lineHeight: 1.05, color: '#1D1D1F' }}
+          >
+            You're on Pro.
+          </h1>
+          <p className="text-[16px] mb-8" style={{ color: '#6E6E73', lineHeight: 1.6 }}>
+            Every template, unlimited proposals, exports, and share links are unlocked — for life. No renewals, ever.
+          </p>
+          <Link
+            to="/app"
+            className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full text-[14px] font-semibold transition-opacity hover:opacity-90"
+            style={{ background: '#1D1D1F', color: '#FFFFFF' }}
+          >
+            Go to dashboard
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </motion.div>
+      </div>
+    )
+  }
 
   function handleUpgrade() {
     const email = user?.primaryEmailAddress?.emailAddress ?? ''
