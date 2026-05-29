@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Check, FileText, Eye, Download, BarChart3, Link2, Zap, ArrowRight, Image as ImageIcon } from 'lucide-react'
+import { Check, FileText, Eye, Download, BarChart3, Link2, Zap, ArrowRight } from 'lucide-react'
 import { themeList, themeRegistry } from '@/constants/themes'
 import { LandingTemplateThumbnail } from '@/pages/LandingTemplateThumbnail'
 import { TemplatePreviewModal } from '@/pages/TemplatePreviewModal'
@@ -117,13 +117,17 @@ export function LandingPage() {
               </div>
             </div>
 
-            {/* Right: image placeholder (black square) */}
+            {/* Right: product illustration */}
             <div className="flex-shrink-0 w-full md:w-[380px]">
               <div
-                className="w-full aspect-square rounded-2xl flex items-center justify-center"
-                style={{ background: '#1D1D1F' }}
+                className="w-full aspect-square rounded-2xl flex items-center justify-center p-8 overflow-hidden"
+                style={{ background: 'linear-gradient(150deg, #EFF6FF 0%, #F5F5F7 100%)', border: '1px solid #E8E8ED' }}
               >
-                <ImageIcon className="h-10 w-10" style={{ color: 'rgba(255,255,255,0.12)' }} />
+                <img
+                  src="/product-release.png"
+                  alt="Launch agency-grade proposals in minutes"
+                  className="w-full h-full object-contain"
+                />
               </div>
             </div>
           </motion.div>
