@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Check, FileText, Eye, Download, BarChart3, Link2, Zap, ArrowRight } from 'lucide-react'
+import { Check, FileText, Eye, Download, BarChart3, Link2, Zap, ArrowRight, Image as ImageIcon } from 'lucide-react'
 import { themeList, themeRegistry } from '@/constants/themes'
 import { LandingTemplateThumbnail } from '@/pages/LandingTemplateThumbnail'
 import { TemplatePreviewModal } from '@/pages/TemplatePreviewModal'
@@ -54,7 +54,7 @@ export function LandingPage() {
             Free to start · $20 for Pro, once
           </div>
           <h1 className="font-extrabold tracking-tight mb-6" style={{ fontSize: 'clamp(44px, 7.5vw, 92px)', lineHeight: 1.05, letterSpacing: '-0.04em', color: '#1D1D1F' }}>
-            Agency-grade proposals.<br />Built in minutes.
+            Agency-grade proposals.<br /><span style={{ color: '#2563EB' }}>Built in minutes.</span>
           </h1>
           <p className="mx-auto mb-10 max-w-2xl" style={{ fontSize: '20px', lineHeight: 1.6, color: '#6E6E73' }}>
             Stop formatting Word docs. Proposly generates beautifully typeset proposals with 5 premium templates — PDF, share, and win — faster than you thought possible.
@@ -77,10 +77,10 @@ export function LandingPage() {
       <section className="py-20 px-6 bg-white" style={{ borderTop: '1px solid #D2D2D7', borderBottom: '1px solid #D2D2D7' }}>
         <div className="max-w-5xl mx-auto">
           <motion.div
-            className="flex flex-col md:flex-row md:items-center gap-10 md:gap-20"
+            className="flex flex-col md:flex-row md:items-center gap-10 md:gap-16"
             {...fadeUp(0)}
           >
-            {/* Left: editorial statement */}
+            {/* Left: editorial statement + USPs */}
             <div style={{ flex: '1 1 0' }}>
               <p
                 className="font-extrabold"
@@ -94,27 +94,37 @@ export function LandingPage() {
               >
                 Clients decide in seconds. A poorly formatted proposal signals how you'll manage their project — before you've said a word. The agencies that win consistently are the ones who show up looking the part.
               </p>
+
+              {/* Differentiator pills */}
+              <div className="flex flex-col gap-2.5 mt-7" style={{ maxWidth: '480px' }}>
+                {[
+                  { icon: '⚡', label: 'Client-ready in under 5 minutes' },
+                  { icon: '✦', label: 'A4-perfect PDF, every template' },
+                  { icon: '→', label: 'Share with a link, track who opened it' },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '12px',
+                      padding: '12px 18px', borderRadius: '12px',
+                      background: '#F5F5F7', border: '1px solid #E8E8ED',
+                    }}
+                  >
+                    <span style={{ fontSize: '16px', flexShrink: 0, lineHeight: 1 }}>{item.icon}</span>
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#1D1D1F' }}>{item.label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Right: differentiator pills */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', flexShrink: 0 }}>
-              {[
-                { icon: '⚡', label: 'Client-ready in under 5 minutes' },
-                { icon: '✦', label: 'A4-perfect PDF, every template' },
-                { icon: '→', label: 'Share with a link, track who opened it' },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '12px',
-                    padding: '12px 18px', borderRadius: '12px',
-                    background: '#F5F5F7', border: '1px solid #E8E8ED',
-                  }}
-                >
-                  <span style={{ fontSize: '16px', flexShrink: 0, lineHeight: 1 }}>{item.icon}</span>
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#1D1D1F' }}>{item.label}</span>
-                </div>
-              ))}
+            {/* Right: image placeholder (black square) */}
+            <div className="flex-shrink-0 w-full md:w-[380px]">
+              <div
+                className="w-full aspect-square rounded-2xl flex items-center justify-center"
+                style={{ background: '#1D1D1F' }}
+              >
+                <ImageIcon className="h-10 w-10" style={{ color: 'rgba(255,255,255,0.12)' }} />
+              </div>
             </div>
           </motion.div>
         </div>

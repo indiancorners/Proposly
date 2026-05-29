@@ -1,12 +1,14 @@
-﻿import { clsx } from 'clsx'
+import { clsx } from 'clsx'
+import { Sparkles, Smartphone, Globe, LayoutGrid } from 'lucide-react'
+import type { ComponentType } from 'react'
 import type { ProposalCategory } from '@/types'
 import { ProposalCategory as Cat } from '@/types'
 
-const CATEGORIES: { value: ProposalCategory; label: string; emoji: string }[] = [
-  { value: Cat.Branding, label: 'Branding', emoji: '✦' },
-  { value: Cat.App, label: 'App / Product', emoji: '◈' },
-  { value: Cat.Website, label: 'Website', emoji: '◻' },
-  { value: Cat.General, label: 'General', emoji: '◎' },
+const CATEGORIES: { value: ProposalCategory; label: string; icon: ComponentType<{ className?: string }> }[] = [
+  { value: Cat.Branding, label: 'Branding', icon: Sparkles },
+  { value: Cat.App, label: 'App / Product', icon: Smartphone },
+  { value: Cat.Website, label: 'Website', icon: Globe },
+  { value: Cat.General, label: 'General', icon: LayoutGrid },
 ]
 
 interface CategorySelectorProps {
@@ -16,24 +18,27 @@ interface CategorySelectorProps {
 
 export function CategorySelector({ value, onChange }: CategorySelectorProps) {
   return (
-    <div className="flex flex-col gap-1">
-      <p className="text-xs font-semibold text-muted uppercase tracking-wide">Proposal Category</p>
-      <div className="flex gap-2">
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat.value}
-            onClick={() => onChange(cat.value)}
-            className={clsx(
-              'flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl border text-sm font-medium transition-colors',
-              value === cat.value
-                ? 'border-foreground bg-subtle text-foreground'
-                : 'border-border bg-surface text-muted hover:border-border-strong hover:text-foreground'
-            )}
-          >
-            <span className="text-base">{cat.emoji}</span>
-            <span className="text-xs">{cat.label}</span>
-          </button>
-        ))}
+    <div className="flex flex-col gap-2">
+      <p className="text-[11px] font-semibold text-placeholder uppercase tracking-widest">Proposal category</p>
+      <div className="grid grid-cols-2 gap-2">
+        {CATEGORIES.map((cat) => {
+          const active = value === cat.value
+          return (
+            <button
+              key={cat.value}
+              onClick={() => onChange(cat.value)}
+              className={clsx(
+                'flex items-center gap-2 px-3 h-11 rounded-xl border text-left transition-all',
+                active
+                  ? 'border-foreground bg-foreground text-white'
+                  : 'border-border bg-surface text-muted hover:border-border-strong hover:text-foreground'
+              )}
+            >
+              <cat.icon className="h-4 w-4 flex-shrink-0" />
+              <span className="text-[12px] font-semibold truncate">{cat.label}</span>
+            </button>
+          )
+        })}
       </div>
     </div>
   )

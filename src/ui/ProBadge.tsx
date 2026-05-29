@@ -9,7 +9,7 @@ export function ProBadge({ className }: ProBadgeProps) {
     <span
       className={clsx(
         'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold',
-        'bg-gradient-to-r from-accent to-purple-600 text-white',
+        'bg-gradient-to-r from-accent to-accent-dark text-white',
         className
       )}
     >
