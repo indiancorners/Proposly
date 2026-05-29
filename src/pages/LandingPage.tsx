@@ -203,9 +203,9 @@ export function LandingPage() {
           </motion.div>
 
           {/* Mini gallery */}
-          <motion.div {...fadeUp(0.2)} style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+          <motion.div {...fadeUp(0.2)} className="flex gap-3 justify-start md:justify-center overflow-x-auto pb-2">
             {themeList.map((theme) => (
-              <button key={theme.id} onClick={() => setActiveTpl(theme.id as ThemeId)} style={{ padding: 0, background: 'transparent', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', border: 'none' }}>
+              <button key={theme.id} onClick={() => setActiveTpl(theme.id as ThemeId)} style={{ padding: 0, background: 'transparent', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', border: 'none', flexShrink: 0 }}>
                 <div style={{ width: '72px', height: '96px', borderRadius: '10px', overflow: 'hidden', position: 'relative', border: activeTpl === theme.id ? '2px solid rgba(255,255,255,0.8)' : '1.5px solid rgba(255,255,255,0.1)', transition: 'all 0.2s', transform: activeTpl === theme.id ? 'scale(1.06)' : 'scale(1)', boxShadow: activeTpl === theme.id ? '0 8px 24px rgba(0,0,0,0.5)' : 'none' }}>
                   <div style={{ width: '300px', height: '400px', transform: `scale(${MINI_SCALE})`, transformOrigin: 'top left', position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}>
                     <LandingTemplateThumbnail themeId={theme.id as ThemeId} />
@@ -231,7 +231,7 @@ export function LandingPage() {
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-3" style={{ border: '1px solid #D2D2D7', borderRadius: '20px', overflow: 'hidden' }}>
             {STEPS.map((step, i) => (
-              <motion.div key={step.num} {...fadeUp(i * 0.1)} className="p-10 flex flex-col" style={{ borderRight: i < 2 ? '1px solid #D2D2D7' : undefined }}>
+              <motion.div key={step.num} {...fadeUp(i * 0.1)} className={`p-6 sm:p-10 flex flex-col ${i < 2 ? 'border-b md:border-b-0 md:border-r' : ''}`} style={{ borderColor: '#D2D2D7' }}>
                 <p className="font-extrabold mb-8 leading-none select-none" style={{ fontSize: '72px', letterSpacing: '-0.04em', color: '#F5F5F7' }}>{step.num}</p>
                 <h3 className="font-bold mb-3" style={{ fontSize: '17px', letterSpacing: '-0.01em', color: '#1D1D1F' }}>{step.title}</h3>
                 <p className="text-[14px]" style={{ color: '#6E6E73', lineHeight: 1.65 }}>{step.desc}</p>

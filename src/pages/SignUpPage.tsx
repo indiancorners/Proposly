@@ -4,7 +4,7 @@ import { clerkAppearance } from '@/lib/clerkAppearance'
 export function SignUpPage() {
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center gap-8"
+      className="min-h-screen flex flex-col items-center justify-center gap-8 px-4"
       style={{ background: '#FAFAFA' }}
     >
       <div className="flex flex-col items-center gap-1 text-center">

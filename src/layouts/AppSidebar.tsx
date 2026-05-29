@@ -1,9 +1,12 @@
-﻿import { NavLink, Link, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Settings, LogOut, Plus } from 'lucide-react'
+import { NavLink, Link, useNavigate } from 'react-router-dom'
+import { LayoutDashboard, Settings, LogOut, Plus, Sparkles } from 'lucide-react'
+import { useUser, useClerk } from '@clerk/clerk-react'
 import { ProBadge } from '@/ui/ProBadge'
+import { FREE_PROPOSAL_LIMIT } from '@/hooks/useProposlyPro'
 
 interface AppSidebarProps {
   isPro: boolean
+  proposalCount: number
 }
 
 const NAV = [
@@ -11,12 +14,14 @@ const NAV = [
   { to: '/app/settings', label: 'Settings',  icon: Settings,        end: false },
 ]
 
-export function AppSidebar({ isPro }: AppSidebarProps) {
+export function AppSidebar({ isPro, proposalCount }: AppSidebarProps) {
   const navigate = useNavigate()
+  const { user } = useUser()
+  const { signOut } = useClerk()
 
   return (
     <aside
-      className="w-60 h-dvh flex-shrink-0 flex flex-col"
+      className="hidden md:flex w-60 h-dvh flex-shrink-0 flex-col"
       style={{ background: '#FFFFFF', borderRight: '1px solid #D2D2D7' }}
     >
       {/* Logo — links back to homepage */}
@@ -67,25 +72,39 @@ export function AppSidebar({ isPro }: AppSidebarProps) {
         ))}
       </nav>
 
+      {/* Plan / usage */}
+      <div className="px-4 pb-4">
+        <PlanCard isPro={isPro} proposalCount={proposalCount} />
+      </div>
+
       {/* User footer */}
       <div className="px-4 py-4" style={{ borderTop: '1px solid #D2D2D7' }}>
         <div className="flex items-center gap-2.5 mb-3">
-          <div
-            className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0"
-            style={{ background: '#1D1D1F' }}
-          >
-            J
-          </div>
+          {user?.imageUrl ? (
+            <img
+              src={user.imageUrl}
+              alt=""
+              className="w-7 h-7 rounded-full flex-shrink-0 object-cover"
+            />
+          ) : (
+            <div
+              className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0"
+              style={{ background: '#1D1D1F' }}
+            >
+              {(user?.firstName?.[0] ?? user?.primaryEmailAddress?.emailAddress?.[0] ?? 'U').toUpperCase()}
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <p className="text-[12px] font-semibold truncate" style={{ color: '#1D1D1F' }}>
-              Jatin Kumar
+              {user?.fullName ?? user?.firstName ?? 'Your account'}
             </p>
             <p className="text-[11px] truncate" style={{ color: '#86868B' }}>
-              jatin@studio.co
+              {user?.primaryEmailAddress?.emailAddress ?? ''}
             </p>
           </div>
         </div>
         <button
+          onClick={() => signOut(() => navigate('/'))}
           className="flex items-center gap-1.5 text-[12px] w-full transition-opacity hover:opacity-60"
           style={{ color: '#86868B' }}
         >
@@ -94,5 +113,58 @@ export function AppSidebar({ isPro }: AppSidebarProps) {
         </button>
       </div>
     </aside>
+  )
+}
+
+// ─── Plan / usage card ────────────────────────────────────────────────────────
+
+export function PlanCard({ isPro, proposalCount }: { isPro: boolean; proposalCount: number }) {
+  if (isPro) {
+    return (
+      <div
+        className="rounded-xl px-3 py-2.5 flex items-center gap-2"
+        style={{ background: '#F5F5F7' }}
+      >
+        <Sparkles className="h-4 w-4 flex-shrink-0" style={{ color: '#1D1D1F' }} />
+        <div className="min-w-0">
+          <p className="text-[12px] font-semibold" style={{ color: '#1D1D1F' }}>Pro plan</p>
+          <p className="text-[11px]" style={{ color: '#86868B' }}>Unlimited proposals</p>
+        </div>
+      </div>
+    )
+  }
+
+  const used = Math.min(proposalCount, FREE_PROPOSAL_LIMIT)
+  const remaining = Math.max(FREE_PROPOSAL_LIMIT - proposalCount, 0)
+  const pct = Math.min((proposalCount / FREE_PROPOSAL_LIMIT) * 100, 100)
+
+  return (
+    <div className="rounded-xl px-3 py-3" style={{ background: '#F5F5F7' }}>
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-[12px] font-semibold" style={{ color: '#1D1D1F' }}>Free plan</p>
+        <span className="text-[11px]" style={{ color: '#86868B' }}>
+          {used} / {FREE_PROPOSAL_LIMIT}
+        </span>
+      </div>
+      <div className="h-1.5 rounded-full overflow-hidden mb-2.5" style={{ background: '#E5E5EA' }}>
+        <div
+          className="h-full rounded-full transition-all"
+          style={{ width: `${pct}%`, background: remaining === 0 ? '#FF453A' : '#1D1D1F' }}
+        />
+      </div>
+      <p className="text-[11px] mb-2.5" style={{ color: '#86868B' }}>
+        {remaining > 0
+          ? `${remaining} proposal${remaining === 1 ? '' : 's'} left`
+          : 'Limit reached — upgrade for unlimited'}
+      </p>
+      <Link
+        to="/app/upgrade"
+        className="flex items-center justify-center gap-1.5 h-8 rounded-full text-[12px] font-semibold transition-opacity hover:opacity-80"
+        style={{ background: '#1D1D1F', color: '#FFFFFF' }}
+      >
+        <Sparkles className="h-3.5 w-3.5" />
+        Upgrade to Pro
+      </Link>
+    </div>
   )
 }

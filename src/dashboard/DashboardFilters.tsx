@@ -19,8 +19,8 @@ const STATUS_TABS: { value: ProposalStatus | 'all'; label: string }[] = [
 
 export function DashboardFilters({ search, statusFilter, onSearchChange, onStatusChange }: DashboardFiltersProps) {
   return (
-    <div className="flex items-center justify-between gap-4 flex-wrap">
-      <div className="flex gap-1">
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      <div className="flex gap-1 overflow-x-auto">
         {STATUS_TABS.map((tab) => {
           const active = statusFilter === tab.value
           return (
@@ -40,13 +40,13 @@ export function DashboardFilters({ search, statusFilter, onSearchChange, onStatu
         })}
       </div>
 
-      <div className="relative">
+      <div className="relative w-full sm:w-auto">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 pointer-events-none text-placeholder" />
         <input
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search proposals…"
-          className="h-8 w-52 pl-8 pr-3 rounded-full text-[13px] bg-white text-foreground placeholder:text-placeholder border border-border hover:border-border-strong focus:border-border-strong focus:outline-none transition-colors"
+          className="h-8 w-full sm:w-52 pl-8 pr-3 rounded-full text-[13px] bg-white text-foreground placeholder:text-placeholder border border-border hover:border-border-strong focus:border-border-strong focus:outline-none transition-colors"
         />
       </div>
     </div>

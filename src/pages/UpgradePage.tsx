@@ -30,7 +30,7 @@ export function UpgradePage() {
   }
 
   return (
-    <div className="p-8 max-w-2xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-2xl mx-auto">
       <div className="text-center mb-10">
         <h1 className="text-3xl font-extrabold text-foreground mb-2">Go Pro</h1>
         <p className="text-base text-muted">One payment. Lifetime access. No subscriptions.</p>

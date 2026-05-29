@@ -87,7 +87,8 @@ function WizardContent({
                 : 'text-placeholder cursor-default'
             )}
           >
-            {s.label}
+            <span className="hidden sm:inline">{s.label}</span>
+            <span className="sm:hidden">{i + 1}</span>
           </button>
           {i < STEPS.length - 1 && <span className="text-placeholder text-xs">›</span>}
         </div>

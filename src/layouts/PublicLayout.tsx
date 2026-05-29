@@ -1,5 +1,6 @@
 ﻿import { useState, useEffect, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react'
 
 interface PublicLayoutProps {
   children: ReactNode
@@ -40,22 +41,34 @@ export function PublicLayout({ children }: PublicLayoutProps) {
             </span>
           </Link>
           <div className="flex items-center gap-5">
-            <Link
-              to="/app"
-              className="text-[13px] font-medium transition-colors"
-              style={{ color: '#6E6E73' }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = '#1D1D1F')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = '#6E6E73')}
-            >
-              Sign in
-            </Link>
-            <Link
-              to="/app/create"
-              className="inline-flex items-center h-8 px-4 rounded-full text-[13px] font-medium transition-opacity hover:opacity-80"
-              style={{ background: '#1D1D1F', color: '#FFFFFF' }}
-            >
-              Get started
-            </Link>
+            <SignedOut>
+              <Link
+                to="/sign-in"
+                className="text-[13px] font-medium transition-colors"
+                style={{ color: '#6E6E73' }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = '#1D1D1F')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = '#6E6E73')}
+              >
+                Sign in
+              </Link>
+              <Link
+                to="/app/create"
+                className="inline-flex items-center h-8 px-4 rounded-full text-[13px] font-medium transition-opacity hover:opacity-80"
+                style={{ background: '#1D1D1F', color: '#FFFFFF' }}
+              >
+                Get started
+              </Link>
+            </SignedOut>
+            <SignedIn>
+              <Link
+                to="/app"
+                className="inline-flex items-center h-8 px-4 rounded-full text-[13px] font-medium transition-opacity hover:opacity-80"
+                style={{ background: '#1D1D1F', color: '#FFFFFF' }}
+              >
+                Dashboard
+              </Link>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
           </div>
         </div>
       </header>

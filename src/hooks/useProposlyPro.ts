@@ -10,7 +10,7 @@ export interface ProposlyProState {
   canUseProTemplate: boolean
 }
 
-const FREE_PROPOSAL_LIMIT = 3
+export const FREE_PROPOSAL_LIMIT = 3
 
 export function useProposlyPro(proposalCount = 0): ProposlyProState {
   const { user, isLoaded } = useUser()

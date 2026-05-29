@@ -27,10 +27,10 @@ export function DashboardPage() {
   })
 
   return (
-    <div className="px-8 py-10 max-w-[1400px] mx-auto flex flex-col gap-8">
+    <div className="px-4 sm:px-8 py-8 sm:py-10 max-w-[1400px] mx-auto flex flex-col gap-8">
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
           <h1
             className="font-bold"
