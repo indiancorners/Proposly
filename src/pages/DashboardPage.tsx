@@ -5,6 +5,7 @@ import { StatsTileGrid } from '@/dashboard/StatsTileGrid'
 import { ProposalGrid } from '@/dashboard/ProposalGrid'
 import { DashboardFilters } from '@/dashboard/DashboardFilters'
 import { UpgradeBanner } from '@/dashboard/UpgradeBanner'
+import { Button } from '@/ui/Button'
 import { useProposals } from '@/hooks/useProposals'
 import { useDashboardStats } from '@/hooks/useDashboardStats'
 import { useProposlyPro } from '@/hooks/useProposlyPro'
@@ -41,14 +42,10 @@ export function DashboardPage() {
             Your proposals, stats, and pipeline at a glance.
           </p>
         </div>
-        <button
-          onClick={() => navigate('/app/create')}
-          className="inline-flex items-center gap-2 h-9 px-5 rounded-full text-[13px] font-semibold transition-opacity hover:opacity-80"
-          style={{ background: '#1D1D1F', color: 'white' }}
-        >
-          <Plus className="h-3.5 w-3.5" />
+        <Button variant="primary" onClick={() => navigate('/app/create')}>
+          <Plus className="h-4 w-4" />
           New Proposal
-        </button>
+        </Button>
       </div>
 
       {/* Stats */}

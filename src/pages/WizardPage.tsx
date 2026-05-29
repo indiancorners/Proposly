@@ -31,7 +31,7 @@ function WizardCreate() {
 
 function WizardEdit({ id }: { id: string }) {
   const { user } = useUser()
-  const { proposal, isLoading, error } = useProposal(id)
+  const { proposal, isLoading, error } = useProposal(id, user?.id)
 
   if (isLoading) {
     return (

@@ -62,17 +62,37 @@ export async function getProposals(userId: string): Promise<ProposalSummary[]> {
   return (data as DbRow[]).map(extractSummary)
 }
 
-export async function getProposal(id: string): Promise<ProposalData> {
+export async function getProposal(id: string, userId: string): Promise<ProposalData> {
   const { data, error } = await supabase
     .from('proposals')
     .select('*')
     .eq('id', id)
+    .eq('user_id', userId)
     .single()
   if (error) throw error
   return rowToProposal(data as DbRow)
 }
 
+const FREE_PROPOSAL_LIMIT = 3
+
 export async function createProposal(p: ProposalData): Promise<ProposalData> {
+  // Server-side free-tier enforcement (defense-in-depth beyond the UI gate)
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('is_pro')
+    .eq('id', p.userId)
+    .single()
+
+  if (!profile?.is_pro) {
+    const { count } = await supabase
+      .from('proposals')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', p.userId)
+    if ((count ?? 0) >= FREE_PROPOSAL_LIMIT) {
+      throw new Error('Free tier limit reached. Upgrade to Pro for unlimited proposals.')
+    }
+  }
+
   const { data, error } = await supabase
     .from('proposals')
     .insert({
@@ -99,21 +119,27 @@ export async function updateProposal(p: ProposalData): Promise<ProposalData> {
       updated_at: new Date().toISOString(),
     })
     .eq('id', p.id)
+    .eq('user_id', p.userId)
     .select()
     .single()
   if (error) throw error
   return rowToProposal(data as DbRow)
 }
 
-export async function deleteProposal(id: string): Promise<void> {
-  const { error } = await supabase.from('proposals').delete().eq('id', id)
+export async function deleteProposal(id: string, userId: string): Promise<void> {
+  const { error } = await supabase
+    .from('proposals')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', userId)
   if (error) throw error
 }
 
-export async function updateProposalStatus(id: string, status: string): Promise<void> {
+export async function updateProposalStatus(id: string, status: string, userId: string): Promise<void> {
   const { error } = await supabase
     .from('proposals')
     .update({ status, updated_at: new Date().toISOString() })
     .eq('id', id)
+    .eq('user_id', userId)
   if (error) throw error
 }

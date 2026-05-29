@@ -12,6 +12,8 @@ Thumbs.db
 # AI tooling
 ruvector.db
 .claude/
+.agents/
+skills-lock.json
 
 # Design reference images (not needed in repo)
 reference/

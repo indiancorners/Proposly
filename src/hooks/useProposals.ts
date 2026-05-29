@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useUser } from '@clerk/clerk-react'
+import { toast } from 'sonner'
 import type { ProposalSummary } from '@/types'
 import {
   getProposals,
@@ -17,21 +18,36 @@ export function useProposals() {
     setIsLoading(true)
     getProposals(user.id)
       .then(setProposals)
-      .catch(console.error)
+      .catch((err) => toast.error(`Failed to load proposals: ${err.message ?? 'unknown error'}`))
       .finally(() => setIsLoading(false))
   }, [isLoaded, user?.id])
 
   const deleteProposal = useCallback(async (id: string) => {
+    if (!user) return
+    const prevList = proposals
     setProposals((prev) => prev.filter((p) => p.id !== id))
-    await dbDelete(id).catch(console.error)
-  }, [])
+    try {
+      await dbDelete(id, user.id)
+      toast.success('Proposal deleted')
+    } catch (err) {
+      setProposals(prevList) // rollback optimistic update
+      toast.error(`Failed to delete: ${err instanceof Error ? err.message : 'unknown error'}`)
+    }
+  }, [user?.id, proposals])
 
   const updateStatus = useCallback(async (id: string, status: ProposalSummary['status']) => {
+    if (!user) return
+    const prevList = proposals
     setProposals((prev) =>
       prev.map((p) => (p.id === id ? { ...p, status, updatedAt: new Date().toISOString() } : p))
     )
-    await updateProposalStatus(id, status).catch(console.error)
-  }, [])
+    try {
+      await updateProposalStatus(id, status, user.id)
+    } catch (err) {
+      setProposals(prevList) // rollback optimistic update
+      toast.error(`Failed to update status: ${err instanceof Error ? err.message : 'unknown error'}`)
+    }
+  }, [user?.id, proposals])
 
   return { proposals, isLoading, deleteProposal, updateStatus }
 }

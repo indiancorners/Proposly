@@ -1,5 +1,6 @@
 ﻿import { Check } from 'lucide-react'
 import { useUser } from '@clerk/clerk-react'
+import { toast } from 'sonner'
 import { Button } from '@/ui/Button'
 import { generateCheckoutUrl } from '@/lib/lemonsqueezy'
 
@@ -21,6 +22,10 @@ export function UpgradePage() {
     const email = user?.primaryEmailAddress?.emailAddress ?? ''
     const userId = user?.id ?? ''
     const url = generateCheckoutUrl(email, userId)
+    if (!url) {
+      toast.error('Checkout is not configured. Please contact support.')
+      return
+    }
     window.open(url, '_blank')
   }
 

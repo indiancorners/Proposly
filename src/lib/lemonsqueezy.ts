@@ -1,6 +1,20 @@
-﻿// Phase 5: Lemon Squeezy checkout
-export function generateCheckoutUrl(_userEmail: string, _userId: string): string {
-  const storeId = import.meta.env.VITE_LEMON_SQUEEZY_STORE_ID
-  const productId = import.meta.env.VITE_LEMON_SQUEEZY_PRODUCT_ID
-  return `https://store.lemonsqueezy.com/checkout/buy/${storeId}/${productId}`
+// Lemon Squeezy checkout URL builder.
+// Reads the base checkout URL from VITE_LEMON_SQUEEZY_CHECKOUT_URL (full URL from LS dashboard)
+// and appends checkout[email] + checkout[custom][user_id] so the webhook can identify the buyer.
+
+export function generateCheckoutUrl(userEmail: string, userId: string): string {
+  const baseUrl = import.meta.env.VITE_LEMON_SQUEEZY_CHECKOUT_URL
+  if (!baseUrl) {
+    console.error('VITE_LEMON_SQUEEZY_CHECKOUT_URL is not set')
+    return ''
+  }
+  try {
+    const url = new URL(baseUrl)
+    if (userEmail) url.searchParams.set('checkout[email]', userEmail)
+    if (userId) url.searchParams.set('checkout[custom][user_id]', userId)
+    return url.toString()
+  } catch {
+    console.error('Invalid VITE_LEMON_SQUEEZY_CHECKOUT_URL:', baseUrl)
+    return ''
+  }
 }

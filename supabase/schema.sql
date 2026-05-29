@@ -4,7 +4,7 @@
 -- Proposals table
 CREATE TABLE IF NOT EXISTS proposals (
   id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id     UUID,
+  user_id     TEXT,
   status      TEXT        NOT NULL DEFAULT 'draft'
                           CHECK (status IN ('draft','sent','won','lost')),
   category    TEXT        NOT NULL DEFAULT 'general',
@@ -32,26 +32,28 @@ CREATE TRIGGER proposals_updated_at
 CREATE INDEX IF NOT EXISTS proposals_user_id_idx ON proposals (user_id);
 CREATE INDEX IF NOT EXISTS proposals_updated_at_idx ON proposals (updated_at DESC);
 
--- ─── Phase 3 additions (already run via SQL Editor) ──────────────────────────
--- ALTER TABLE proposals ALTER COLUMN user_id TYPE TEXT;
---
--- CREATE TABLE IF NOT EXISTS profiles (
---   id               TEXT        PRIMARY KEY,
---   email            TEXT,
---   is_pro           BOOLEAN     NOT NULL DEFAULT false,
---   studio_name      TEXT        NOT NULL DEFAULT '',
---   default_currency TEXT        NOT NULL DEFAULT 'USD',
---   default_terms    TEXT        NOT NULL DEFAULT '',
---   created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
---   updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
--- );
--- DROP TRIGGER IF EXISTS profiles_updated_at ON profiles;
--- CREATE TRIGGER profiles_updated_at
---   BEFORE UPDATE ON profiles
---   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
---
+-- Profiles table (Clerk user ID is TEXT)
+CREATE TABLE IF NOT EXISTS profiles (
+  id               TEXT        PRIMARY KEY,
+  email            TEXT,
+  is_pro           BOOLEAN     NOT NULL DEFAULT false,
+  studio_name      TEXT        NOT NULL DEFAULT '',
+  default_currency TEXT        NOT NULL DEFAULT 'USD',
+  default_terms    TEXT        NOT NULL DEFAULT '',
+  created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+DROP TRIGGER IF EXISTS profiles_updated_at ON profiles;
+CREATE TRIGGER profiles_updated_at
+  BEFORE UPDATE ON profiles
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- NOTE: RLS skipped — app-level user_id filtering used.
--- Phase 5+ adds Clerk JWT template + Supabase RLS policies.
+-- Phase 5+ will add Clerk JWT template + Supabase RLS policies for defense-in-depth.
+
+-- Migration for existing databases (safe to re-run, will no-op if already TEXT):
+-- ALTER TABLE proposals ALTER COLUMN user_id TYPE TEXT;
 
 -- ─── Phase 4: shared_links (run in Supabase SQL Editor) ──────────────────────
 CREATE TABLE IF NOT EXISTS shared_links (

@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
+import { toast } from 'sonner'
 import type { ProposalData, ThemeId, SectionData, SectionType } from '@/types'
 import { ProposalStatus, ProposalCategory } from '@/types'
 import { createEmptySections } from '@/constants/defaultData'
@@ -58,7 +59,8 @@ export function useWizardStore(initialProposal?: ProposalData, userId = '') {
         }))
       } catch (err) {
         setState((prev) => ({ ...prev, isSaving: false }))
-        console.error('Auto-save failed:', err)
+        const msg = err instanceof Error ? err.message : 'unknown error'
+        toast.error(`Auto-save failed: ${msg}`)
       }
     }, 2000)
 

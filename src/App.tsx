@@ -1,5 +1,6 @@
 ﻿import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import { AuthenticateWithRedirectCallback } from '@clerk/clerk-react'
+import { Toaster } from 'sonner'
 import { RootLayout } from '@/layouts/RootLayout'
 import { AppLayout } from '@/layouts/AppLayout'
 import { PublicLayout } from '@/layouts/PublicLayout'
@@ -64,5 +65,10 @@ const router = createBrowserRouter([
 ])
 
 export default function App() {
-  return <RouterProvider router={router} />
+  return (
+    <>
+      <Toaster position="top-center" richColors closeButton />
+      <RouterProvider router={router} />
+    </>
+  )
 }

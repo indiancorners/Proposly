@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/clerk-react'
+import { toast } from 'sonner'
 import { Input } from '@/ui/Input'
 import { Textarea } from '@/ui/Textarea'
 import { Select } from '@/ui/Select'
@@ -51,9 +52,12 @@ export function SettingsPage() {
         defaultTerms: terms,
       })
       setSaved(true)
+      toast.success('Settings saved')
       setTimeout(() => setSaved(false), 2000)
-    } catch {
-      setError('Error saving — try again')
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'unknown error'
+      setError(`Error saving: ${msg}`)
+      toast.error(`Failed to save settings: ${msg}`)
     } finally {
       setSaving(false)
     }
