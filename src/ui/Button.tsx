@@ -1,7 +1,7 @@
 ﻿import { type ButtonHTMLAttributes, forwardRef } from 'react'
 import { clsx } from 'clsx'
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'upgrade'
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'upgrade' | 'dark'
 type Size = 'sm' | 'md' | 'lg'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -18,6 +18,7 @@ const variants: Record<Variant, string> = {
   ghost: 'text-foreground hover:bg-subtle focus-visible:ring-accent',
   danger: 'bg-red-50 text-danger border border-red-200 hover:bg-red-100 focus-visible:ring-danger',
   upgrade: 'bg-gradient-to-r from-accent to-purple-600 text-white hover:opacity-90 focus-visible:ring-accent',
+  dark: 'bg-foreground text-white hover:opacity-90 focus-visible:ring-foreground',
 }
 
 const sizes: Record<Size, string> = {

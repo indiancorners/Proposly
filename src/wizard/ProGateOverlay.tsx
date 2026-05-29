@@ -16,7 +16,7 @@ export function ProGateOverlay({ feature }: ProGateOverlayProps) {
       </div>
       <p className="text-sm font-semibold text-foreground">Pro feature</p>
       <p className="text-xs text-muted">{feature}</p>
-      <Button variant="upgrade" size="sm" onClick={() => navigate('/app/upgrade')}>
+      <Button variant="dark" size="sm" onClick={() => navigate('/app/upgrade')}>
         Upgrade — $20 once
       </Button>
     </div>

@@ -22,7 +22,7 @@ export function ThemeCard({ themeId, selected, locked, onSelect }: ThemeCardProp
       className={clsx(
         'relative flex flex-col gap-2 p-2 rounded-2xl border-2 text-left transition-all duration-150',
         selected
-          ? 'border-accent shadow-md'
+          ? 'border-foreground shadow-md'
           : 'border-border hover:border-border-strong hover:shadow-sm'
       )}
     >
@@ -31,7 +31,7 @@ export function ThemeCard({ themeId, selected, locked, onSelect }: ThemeCardProp
         <ThemePreviewThumbnail themeId={themeId} />
         {locked && <ProGateOverlay feature={`${theme?.name} template`} />}
         {selected && !locked && (
-          <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-accent flex items-center justify-center">
+          <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-foreground flex items-center justify-center">
             <Check className="h-3.5 w-3.5 text-white" />
           </div>
         )}

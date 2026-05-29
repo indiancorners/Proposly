@@ -82,7 +82,7 @@ export function SettingsPage() {
         <Select label="Default Currency" value={currency} options={CURRENCIES} onChange={(e) => setCurrency(e.target.value)} />
         <Textarea label="Default Terms & Conditions" value={terms} rows={10} onChange={(e) => setTerms(e.target.value)} />
         <div>
-          <Button onClick={handleSave} loading={saving} disabled={saving}>
+          <Button variant="dark" onClick={handleSave} loading={saving} disabled={saving}>
             {saved ? '✓ Saved' : 'Save Settings'}
           </Button>
           {error && <p className="text-sm text-danger mt-2">{error}</p>}

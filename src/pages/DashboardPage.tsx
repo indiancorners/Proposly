@@ -42,7 +42,7 @@ export function DashboardPage() {
             Your proposals, stats, and pipeline at a glance.
           </p>
         </div>
-        <Button variant="primary" onClick={() => navigate('/app/create')}>
+        <Button variant="dark" onClick={() => navigate('/app/create')}>
           <Plus className="h-4 w-4" />
           New Proposal
         </Button>

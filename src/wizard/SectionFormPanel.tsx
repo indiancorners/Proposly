@@ -56,7 +56,7 @@ export function SectionFormPanel({ sections, onUpdate }: SectionFormPanelProps) 
             className={clsx(
               'px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors',
               activeType === s.type
-                ? 'bg-accent text-white'
+                ? 'bg-foreground text-white'
                 : 'text-muted hover:bg-subtle hover:text-foreground'
             )}
           >

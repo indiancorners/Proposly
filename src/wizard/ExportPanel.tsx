@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { Button } from '@/ui/Button'
-import { ProGateOverlay } from './ProGateOverlay'
-import { Download, Share2, Save, ImageIcon } from 'lucide-react'
+import type { ComponentType, RefObject } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import type { RefObject } from 'react'
+import { Download, Share2, Save, Image as ImageIcon, Check, Link2, Loader2 } from 'lucide-react'
+import { Button } from '@/ui/Button'
+import { ProGateOverlay } from './ProGateOverlay'
 import type { ProposalData } from '@/types'
 import { exportToPDF, exportToPNG } from '@/lib/exportService'
 import { createSharedLink } from '@/services/shareService'
@@ -15,6 +15,43 @@ interface ExportPanelProps {
   isPro: boolean
   isSaving: boolean
   onSave: () => Promise<void>
+}
+
+// A premium, left-aligned action row: icon chip + label + helper hint.
+function ActionRow({
+  icon: Icon,
+  label,
+  hint,
+  onClick,
+  loading,
+  disabled,
+}: {
+  icon: ComponentType<{ className?: string }>
+  label: string
+  hint: string
+  onClick: () => void
+  loading?: boolean
+  disabled?: boolean
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className="group w-full flex items-center gap-3 px-3 h-[52px] rounded-xl border border-border bg-surface text-left transition-all hover:border-border-strong hover:bg-subtle disabled:opacity-60 disabled:pointer-events-none"
+    >
+      <span className="w-8 h-8 rounded-lg bg-subtle flex items-center justify-center flex-shrink-0 transition-colors group-hover:bg-overlay">
+        {loading ? (
+          <Loader2 className="h-4 w-4 text-muted animate-spin" />
+        ) : (
+          <Icon className="h-4 w-4 text-foreground" />
+        )}
+      </span>
+      <span className="flex-1 min-w-0">
+        <span className="block text-[13px] font-semibold text-foreground truncate">{label}</span>
+        <span className="block text-[11px] text-placeholder truncate">{hint}</span>
+      </span>
+    </button>
+  )
 }
 
 export function ExportPanel({ exportRef, proposal, isPro, isSaving, onSave }: ExportPanelProps) {
@@ -32,9 +69,9 @@ export function ExportPanel({ exportRef, proposal, isPro, isSaving, onSave }: Ex
   )
 
   const shareLabelMap: Record<ShareState, string> = {
-    idle: 'Share Link',
+    idle: 'Share link',
     loading: 'Creating link…',
-    copied: 'Link Copied!',
+    copied: 'Link copied!',
     error: 'Error — try again',
   }
 
@@ -85,41 +122,44 @@ export function ExportPanel({ exportRef, proposal, isPro, isSaving, onSave }: Ex
     }
   }
 
+  const shareIcon = shareState === 'copied' ? Check : shareState === 'idle' ? Share2 : Link2
+
   return (
-    <div className="flex flex-col gap-3 p-4 bg-surface border border-border rounded-2xl shadow-sm">
-      <Button
-        variant="primary"
-        onClick={handlePdfExport}
-        className="relative overflow-hidden"
-      >
-        <Download className="h-4 w-4" />
-        Download PDF
-        {!isPro && <ProGateOverlay feature="PDF export requires Pro" />}
-      </Button>
+    <div className="flex flex-col gap-4">
+      {/* Export & share group */}
+      <div className="bg-surface border border-border rounded-2xl p-3.5 shadow-sm flex flex-col gap-2.5">
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-placeholder px-1">
+          Export & share
+        </p>
 
-      <div className="relative overflow-hidden">
-        <Button variant="secondary" className="w-full" onClick={handlePngExport}>
-          <ImageIcon className="h-4 w-4" />
-          Download PNG
-        </Button>
-        {!isPro && <ProGateOverlay feature="PNG export requires Pro" />}
+        <div className="relative overflow-hidden rounded-xl">
+          <ActionRow icon={Download} label="Download PDF" hint="A4 · print-ready" onClick={handlePdfExport} />
+          {!isPro && <ProGateOverlay feature="PDF export requires Pro" />}
+        </div>
+
+        <div className="relative overflow-hidden rounded-xl">
+          <ActionRow icon={ImageIcon} label="Download PNG" hint="High-resolution image" onClick={handlePngExport} />
+          {!isPro && <ProGateOverlay feature="PNG export requires Pro" />}
+        </div>
+
+        <div className="relative overflow-hidden rounded-xl">
+          <ActionRow
+            icon={shareIcon}
+            label={shareLabelMap[shareState]}
+            hint="Public view-only link"
+            onClick={handleShare}
+            loading={shareState === 'loading'}
+            disabled={shareState === 'loading'}
+          />
+          {!isPro && <ProGateOverlay feature="Share links require Pro" />}
+        </div>
       </div>
 
-      <div className="relative overflow-hidden">
-        <Button
-          variant="secondary"
-          className="w-full"
-          onClick={handleShare}
-          disabled={shareState === 'loading'}
-        >
-          <Share2 className="h-4 w-4" />
-          {shareLabelMap[shareState]}
-        </Button>
-        {!isPro && <ProGateOverlay feature="Share links require Pro" />}
-      </div>
-
+      {/* Save — primary completion action */}
       <Button
-        variant="primary"
+        variant="dark"
+        size="lg"
+        className="w-full"
         loading={isSaving}
         onClick={async () => {
           try {

@@ -12,7 +12,7 @@ export function ThemePickerStep({ selected, isPro, onSelect }: ThemePickerStepPr
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-xl font-bold text-foreground">Choose a Template</h2>
+        <h2 className="text-xl font-bold text-foreground" style={{ letterSpacing: '-0.02em' }}>Choose a template</h2>
         <p className="text-sm text-muted mt-1">
           1 free template. 4 Pro templates. Each is pixel-perfect.
         </p>

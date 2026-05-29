@@ -81,9 +81,9 @@ function WizardContent({
             className={clsx(
               'text-xs font-medium px-2.5 py-1 rounded-full transition-colors',
               step === s.id
-                ? 'bg-accent text-white'
+                ? 'bg-foreground text-white'
                 : step > s.id
-                ? 'text-accent hover:underline cursor-pointer'
+                ? 'text-foreground hover:underline cursor-pointer'
                 : 'text-placeholder cursor-default'
             )}
           >
@@ -132,7 +132,7 @@ function WizardContent({
             >
               Back
             </Button>
-            <Button onClick={() => setStep((step + 1) as 1 | 2 | 3)}>
+            <Button variant="dark" onClick={() => setStep((step + 1) as 1 | 2 | 3)}>
               {step === 2 ? 'Review →' : 'Next →'}
             </Button>
           </div>

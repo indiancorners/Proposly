@@ -26,7 +26,7 @@ export function CategorySelector({ value, onChange }: CategorySelectorProps) {
             className={clsx(
               'flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl border text-sm font-medium transition-colors',
               value === cat.value
-                ? 'border-accent bg-accent-light text-accent'
+                ? 'border-foreground bg-subtle text-foreground'
                 : 'border-border bg-surface text-muted hover:border-border-strong hover:text-foreground'
             )}
           >
