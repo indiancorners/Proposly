@@ -118,17 +118,12 @@ export function LandingPage() {
             </div>
 
             {/* Right: product illustration */}
-            <div className="flex-shrink-0 w-full md:w-[380px]">
-              <div
-                className="w-full aspect-square rounded-2xl flex items-center justify-center p-8 overflow-hidden"
-                style={{ background: 'linear-gradient(150deg, #EFF6FF 0%, #F5F5F7 100%)', border: '1px solid #E8E8ED' }}
-              >
-                <img
-                  src="/product-release.png"
-                  alt="Launch agency-grade proposals in minutes"
-                  className="w-full h-full object-contain"
-                />
-              </div>
+            <div className="flex-shrink-0 w-full md:w-[380px] flex items-center justify-center">
+              <img
+                src="/product-release.png"
+                alt="Launch agency-grade proposals in minutes"
+                className="w-full max-w-[320px] h-auto object-contain"
+              />
             </div>
           </motion.div>
         </div>
