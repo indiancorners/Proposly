@@ -77,14 +77,23 @@ serve(async (req: Request) => {
 
   // Upgrade on first successful order. Lemon Squeezy fires `order_created` once payment succeeds.
   if (eventName === 'order_created' && userId) {
-    const { error } = await supabase
+    // Use upsert so the upgrade succeeds even if the profile row doesn't exist yet
+    // (e.g. webhook arrives before the user's first sign-in). UPDATE on a missing
+    // row returns HTTP 200 with count=0 and silently drops the upgrade.
+    const { error, count } = await supabase
       .from('profiles')
-      .update({ is_pro: true })
-      .eq('id', userId)
+      .upsert(
+        { id: userId, is_pro: true },
+        { onConflict: 'id', ignoreDuplicates: false }
+      )
 
     if (error) {
       console.error('Failed to upgrade user:', userId, error)
       return new Response('DB error', { status: 500 })
+    }
+
+    if (count === 0) {
+      console.warn('Upsert matched 0 rows for userId:', userId)
     }
 
     console.log('Upgraded user to Pro:', userId)

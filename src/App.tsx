@@ -14,6 +14,7 @@ import { UpgradeSuccessPage } from '@/pages/UpgradeSuccessPage'
 import { PublicProposalView } from '@/pages/PublicProposalView'
 import { SignInPage } from '@/pages/SignInPage'
 import { SignUpPage } from '@/pages/SignUpPage'
+import { LegalPage } from '@/pages/LegalPage'
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,14 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <PublicLayout><LandingPage /></PublicLayout>,
+      },
+      {
+        path: '/terms',
+        element: <PublicLayout><LegalPage /></PublicLayout>,
+      },
+      {
+        path: '/privacy',
+        element: <PublicLayout><LegalPage /></PublicLayout>,
       },
       {
         path: '/sign-in',

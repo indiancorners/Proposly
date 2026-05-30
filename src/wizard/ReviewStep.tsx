@@ -8,9 +8,10 @@ interface ReviewStepProps {
   isPro: boolean
   isSaving: boolean
   onSave: () => Promise<void>
+  onPatch: (patch: Partial<ProposalData>) => void
 }
 
-export function ReviewStep({ proposal, isPro, isSaving, onSave }: ReviewStepProps) {
+export function ReviewStep({ proposal, isPro, isSaving, onSave, onPatch }: ReviewStepProps) {
   const exportRef = useRef<HTMLDivElement>(null)
 
   return (
@@ -29,6 +30,7 @@ export function ReviewStep({ proposal, isPro, isSaving, onSave }: ReviewStepProp
           isPro={isPro}
           isSaving={isSaving}
           onSave={onSave}
+          onPatch={onPatch}
         />
       </div>
     </div>

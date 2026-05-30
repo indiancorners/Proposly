@@ -77,6 +77,7 @@ function WizardContent({
     updateSection,
     toggleSection,
     saveProposal,
+    patchProposal,
   } = useWizardStore(initialProposal, userId)
 
   const stepIndicator = (
@@ -123,9 +124,8 @@ function WizardContent({
               proposal={proposal}
               isPro={isPro}
               isSaving={isSaving}
-              onSave={async () => {
-                await saveProposal()
-              }}
+              onSave={async () => { await saveProposal() }}
+              onPatch={patchProposal}
             />
           )}
         </div>

@@ -15,6 +15,7 @@ interface ExportPanelProps {
   isPro: boolean
   isSaving: boolean
   onSave: () => Promise<void>
+  onPatch: (patch: Partial<ProposalData>) => void
 }
 
 // A premium, left-aligned action row: icon chip + label + helper hint.
@@ -54,7 +55,7 @@ function ActionRow({
   )
 }
 
-export function ExportPanel({ exportRef, proposal, isPro, isSaving, onSave }: ExportPanelProps) {
+export function ExportPanel({ exportRef, proposal, isPro, isSaving, onSave, onPatch }: ExportPanelProps) {
   const navigate = useNavigate()
   const cover = proposal.sections.find((s) => s.type === 'cover')
   const meta = {
@@ -91,6 +92,9 @@ export function ExportPanel({ exportRef, proposal, isPro, isSaving, onSave }: Ex
         setShareState('loading')
         const link = await createSharedLink(proposal.id)
         setLocalSharedLinkId(link.id)
+        // C4: write the new sharedLinkId back to the store so the next
+        // auto-save doesn't overwrite it with null
+        onPatch({ sharedLinkId: link.id })
         linkId = link.id
       }
 
