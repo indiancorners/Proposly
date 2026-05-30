@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useUser } from '@clerk/clerk-react'
 import { ProposalEditorLayout } from '@/layouts/ProposalEditorLayout'
 import { ThemePickerStep } from '@/wizard/ThemePickerStep'
@@ -31,6 +31,7 @@ function WizardCreate() {
 
 function WizardEdit({ id }: { id: string }) {
   const { user } = useUser()
+  const navigate = useNavigate()
   const { proposal, isLoading, error } = useProposal(id, user?.id)
 
   if (isLoading) {
@@ -43,8 +44,14 @@ function WizardEdit({ id }: { id: string }) {
 
   if (error || !proposal) {
     return (
-      <div className="flex h-full items-center justify-center text-sm" style={{ color: '#6E6E73' }}>
-        Could not load proposal.
+      <div className="flex h-full flex-col items-center justify-center gap-4 p-8 text-center">
+        <p className="text-sm" style={{ color: '#6E6E73' }}>
+          This proposal couldn't be loaded. It may have been deleted.
+        </p>
+        <div className="flex gap-3">
+          <Button variant="dark" onClick={() => navigate('/app')}>Back to dashboard</Button>
+          <Button variant="secondary" onClick={() => window.location.reload()}>Try again</Button>
+        </div>
       </div>
     )
   }

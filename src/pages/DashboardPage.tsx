@@ -38,9 +38,6 @@ export function DashboardPage() {
           >
             Dashboard
           </h1>
-          <p className="text-[13px] mt-0.5" style={{ color: '#6E6E73' }}>
-            Your proposals, stats, and pipeline at a glance.
-          </p>
         </div>
         <Button variant="dark" onClick={() => navigate('/app/create')}>
           <Plus className="h-4 w-4" />

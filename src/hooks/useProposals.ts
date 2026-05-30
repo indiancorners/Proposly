@@ -18,7 +18,7 @@ export function useProposals() {
     setIsLoading(true)
     getProposals(user.id)
       .then(setProposals)
-      .catch((err) => toast.error(`Failed to load proposals: ${err.message ?? 'unknown error'}`))
+      .catch((err) => { console.error('getProposals:', err); toast.error("Couldn't load your proposals. Please refresh the page.") })
       .finally(() => setIsLoading(false))
   }, [isLoaded, user?.id])
 
@@ -31,7 +31,7 @@ export function useProposals() {
       toast.success('Proposal deleted')
     } catch (err) {
       setProposals(prevList) // rollback optimistic update
-      toast.error(`Failed to delete: ${err instanceof Error ? err.message : 'unknown error'}`)
+      console.error('deleteProposal:', err); toast.error("Couldn't delete that proposal. Please try again.")
     }
   }, [user?.id, proposals])
 
@@ -45,7 +45,7 @@ export function useProposals() {
       await updateProposalStatus(id, status, user.id)
     } catch (err) {
       setProposals(prevList) // rollback optimistic update
-      toast.error(`Failed to update status: ${err instanceof Error ? err.message : 'unknown error'}`)
+      console.error('updateStatus:', err); toast.error("Couldn't update the status. Please try again.")
     }
   }, [user?.id, proposals])
 

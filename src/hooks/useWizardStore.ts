@@ -59,8 +59,8 @@ export function useWizardStore(initialProposal?: ProposalData, userId = '') {
         }))
       } catch (err) {
         setState((prev) => ({ ...prev, isSaving: false }))
-        const msg = err instanceof Error ? err.message : 'unknown error'
-        toast.error(`Auto-save failed: ${msg}`)
+        console.error('auto-save:', err)
+        toast.error("Your changes couldn't be saved automatically. Check your connection.")
       }
     }, 2000)
 

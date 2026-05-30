@@ -8,7 +8,7 @@ export function useProposal(id?: string, userId?: string) {
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
-    if (!id || !userId) return
+    if (!id || !userId) { setIsLoading(false); return }
     setIsLoading(true)
     setError(null)
     getProposal(id, userId)

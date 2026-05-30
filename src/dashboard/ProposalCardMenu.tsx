@@ -1,5 +1,5 @@
 ﻿import { useState, useRef, useEffect } from 'react'
-import { MoreHorizontal, Pencil, Copy, Trash2, ArrowRightLeft } from 'lucide-react'
+import { MoreHorizontal, Pencil, Trash2, ArrowRightLeft } from 'lucide-react'
 import { ProposalStatus } from '@/types'
 import type { ProposalSummary } from '@/types'
 import { useNavigate } from 'react-router-dom'
@@ -71,11 +71,6 @@ export function ProposalCardMenu({ proposal, onDelete, onStatusChange }: Proposa
               icon: ArrowRightLeft,
               label: 'Change Status',
               onClick: () => setShowStatus(!showStatus),
-            },
-            {
-              icon: Copy,
-              label: 'Duplicate',
-              onClick: () => setOpen(false),
             },
           ].map((item) => (
             <button

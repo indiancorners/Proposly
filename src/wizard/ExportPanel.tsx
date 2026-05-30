@@ -99,8 +99,9 @@ export function ExportPanel({ exportRef, proposal, isPro, isSaving, onSave }: Ex
       toast.success('Share link copied to clipboard')
       setTimeout(() => setShareState('idle'), 2000)
     } catch (err) {
+      console.error('createSharedLink:', err)
       setShareState('error')
-      toast.error(`Failed to create share link: ${err instanceof Error ? err.message : 'unknown error'}`)
+      toast.error("Couldn't create share link. Check your connection and try again.")
     }
   }
 
@@ -109,7 +110,8 @@ export function ExportPanel({ exportRef, proposal, isPro, isSaving, onSave }: Ex
       await exportToPDF(exportRef, meta)
       toast.success('PDF downloaded')
     } catch (err) {
-      toast.error(`PDF export failed: ${err instanceof Error ? err.message : 'unknown error'}`)
+      console.error('exportToPDF:', err)
+      toast.error('PDF export failed. Try refreshing the page.')
     }
   }
 
@@ -118,7 +120,8 @@ export function ExportPanel({ exportRef, proposal, isPro, isSaving, onSave }: Ex
       await exportToPNG(exportRef, meta)
       toast.success('PNG downloaded')
     } catch (err) {
-      toast.error(`PNG export failed: ${err instanceof Error ? err.message : 'unknown error'}`)
+      console.error('exportToPNG:', err)
+      toast.error('PNG export failed. Try refreshing the page.')
     }
   }
 
@@ -167,8 +170,8 @@ export function ExportPanel({ exportRef, proposal, isPro, isSaving, onSave }: Ex
             toast.success('Proposal saved')
             navigate('/app')
           } catch (err) {
-            const msg = err instanceof Error ? err.message : String(err)
-            toast.error(`Save failed: ${msg}`)
+            console.error('saveProposal:', err)
+            toast.error("Couldn't save your proposal. Check your connection.")
           }
         }}
       >

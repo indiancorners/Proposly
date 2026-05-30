@@ -46,7 +46,7 @@ export function ProposalCard({ proposal, onDelete, onStatusChange }: ProposalCar
             {proposal.projectTitle || 'Untitled'}
           </p>
           <p className="text-[12px] truncate mt-0.5" style={{ color: '#6E6E73' }}>
-            {proposal.clientName || 'No client'}
+            {proposal.clientName || '—'}
           </p>
         </div>
         <div onClick={(e) => e.stopPropagation()}>

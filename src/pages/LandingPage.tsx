@@ -30,10 +30,10 @@ const FEATURES_SMALL = [
   { icon: Download,  title: 'PDF export',    body: 'A4-perfect, 2× resolution. Ready to attach and send in seconds.' },
   { icon: Link2,     title: 'Share links',   body: 'Generate a public URL, track views, and revoke access anytime.' },
   { icon: BarChart3, title: 'Pipeline',      body: 'Track Draft, Sent, Won, Lost. See your total pipeline value at a glance.' },
-  { icon: Zap,       title: 'Fast as hell',  body: 'New proposal to downloaded PDF in under 5 minutes. Built for agencies.' },
+  { icon: Zap,       title: 'Under 5 minutes',  body: 'New proposal to downloaded PDF in under 5 minutes. Built for agencies.' },
 ]
 
-const FREE_FEATURES = ['1 proposal', 'Folio template', 'Live preview', 'Save to dashboard']
+const FREE_FEATURES = ['3 proposals', 'Folio template', 'Live preview', 'Save to dashboard']
 const PRO_FEATURES  = ['Unlimited proposals', 'All 5 templates', 'PDF + PNG export', 'Public share links', 'Pipeline analytics', 'Lifetime updates']
 
 export function LandingPage() {
@@ -68,7 +68,7 @@ export function LandingPage() {
               See templates
             </button>
           </div>
-          <p className="mt-4 text-[12px]" style={{ color: '#86868B' }}>No credit card required · 1 free proposal, always</p>
+          <p className="mt-4 text-[12px]" style={{ color: '#86868B' }}>3 free proposals · No card needed</p>
         </motion.div>
 
       </section>
@@ -171,7 +171,7 @@ export function LandingPage() {
                     <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '14px 16px', marginBottom: '20px', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                       <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '13px', color: 'white' }}>✦</div>
                       <div>
-                        <div style={{ fontSize: '12px', fontWeight: 700, color: 'white', marginBottom: '3px' }}>All 4 Pro templates included</div>
+                        <div style={{ fontSize: '12px', fontWeight: 700, color: 'white', marginBottom: '3px' }}>All 5 templates included</div>
                         <div style={{ fontSize: '12px', color: '#86868B' }}>$20 once — unlimited proposals, PDF export, share links, lifetime updates.</div>
                       </div>
                     </div>

@@ -21,7 +21,11 @@ declare global {
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   accessToken: async () => {
-    const token = await window.Clerk?.session?.getToken()
-    return token ? stripWs(token) : null
+    try {
+      const token = await window.Clerk?.session?.getToken()
+      return token ? stripWs(token) : null
+    } catch {
+      return null
+    }
   },
 })

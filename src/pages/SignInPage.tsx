@@ -1,4 +1,5 @@
 ﻿import { SignIn } from '@clerk/clerk-react'
+import { Link } from 'react-router-dom'
 import { clerkAppearance } from '@/lib/clerkAppearance'
 
 export function SignInPage() {
@@ -8,17 +9,17 @@ export function SignInPage() {
       style={{ background: '#FAFAFA' }}
     >
       <div className="flex flex-col items-center gap-1 text-center">
-        <span
-          className="font-semibold tracking-tight"
-          style={{ fontSize: '22px', color: '#1D1D1F', letterSpacing: '-0.02em' }}
-        >
+        <Link to="/" className="font-semibold tracking-tight transition-opacity hover:opacity-70" style={{ fontSize: '22px', color: '#1D1D1F', letterSpacing: '-0.02em' }}>
           Proposly
-        </span>
+        </Link>
         <p className="text-sm" style={{ color: '#6E6E73' }}>
-          Sign in to your workspace
+          Welcome back.
         </p>
       </div>
       <SignIn appearance={clerkAppearance} forceRedirectUrl="/app" />
+      <Link to="/" className="text-xs transition-opacity hover:opacity-70" style={{ color: '#86868B' }}>
+        ← Back to home
+      </Link>
     </div>
   )
 }
