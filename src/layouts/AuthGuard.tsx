@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { useAuth } from '@clerk/clerk-react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 import { Spinner } from '@/ui/Spinner'
 
 interface AuthGuardProps {
@@ -9,6 +9,7 @@ interface AuthGuardProps {
 
 export function AuthGuard({ children }: AuthGuardProps) {
   const { isLoaded, isSignedIn } = useAuth()
+  const location = useLocation()
 
   if (!isLoaded) {
     return (
@@ -19,7 +20,9 @@ export function AuthGuard({ children }: AuthGuardProps) {
   }
 
   if (!isSignedIn) {
-    return <Navigate to="/sign-in" replace />
+    // Preserve the intended destination so sign-in redirects back correctly
+    const redirect = encodeURIComponent(location.pathname + location.search)
+    return <Navigate to={`/sign-in?redirect=${redirect}`} replace />
   }
 
   return <>{children}</>

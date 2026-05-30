@@ -6,16 +6,14 @@ import { ProposalGrid } from '@/dashboard/ProposalGrid'
 import { DashboardFilters } from '@/dashboard/DashboardFilters'
 import { UpgradeBanner } from '@/dashboard/UpgradeBanner'
 import { Button } from '@/ui/Button'
-import { useProposals } from '@/hooks/useProposals'
 import { useDashboardStats } from '@/hooks/useDashboardStats'
-import { useProposlyPro } from '@/hooks/useProposlyPro'
+import { useAppData } from '@/context/AppDataContext'
 import type { ProposalStatus } from '@/types'
 
 export function DashboardPage() {
   const navigate = useNavigate()
-  const { proposals, deleteProposal, updateStatus } = useProposals()
+  const { proposals, deleteProposal, updateStatus, isPro, isAtLimit } = useAppData()
   const stats = useDashboardStats(proposals)
-  const { isPro, isAtLimit } = useProposlyPro(proposals.length)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<ProposalStatus | 'all'>('all')
 

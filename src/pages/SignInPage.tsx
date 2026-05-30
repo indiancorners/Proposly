@@ -1,8 +1,10 @@
 ﻿import { SignIn } from '@clerk/clerk-react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { clerkAppearance } from '@/lib/clerkAppearance'
 
 export function SignInPage() {
+  const [params] = useSearchParams()
+  const redirect = params.get('redirect') ?? '/app'
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center gap-8 px-4"
@@ -16,7 +18,7 @@ export function SignInPage() {
           Welcome back.
         </p>
       </div>
-      <SignIn appearance={clerkAppearance} forceRedirectUrl="/app" />
+      <SignIn appearance={clerkAppearance} forceRedirectUrl={redirect} />
       <Link to="/" className="text-xs transition-opacity hover:opacity-70" style={{ color: '#86868B' }}>
         ← Back to home
       </Link>

@@ -43,6 +43,15 @@ export function PublicLayout({ children }: PublicLayoutProps) {
           <div className="flex items-center gap-5">
             <SignedOut>
               <Link
+                to="/#pricing"
+                className="text-[13px] font-medium transition-colors"
+                style={{ color: '#6E6E73' }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = '#1D1D1F')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = '#6E6E73')}
+              >
+                Pricing
+              </Link>
+              <Link
                 to="/sign-in"
                 className="text-[13px] font-medium transition-colors"
                 style={{ color: '#6E6E73' }}
@@ -52,7 +61,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
                 Sign in
               </Link>
               <Link
-                to="/app/create"
+                to="/sign-up"
                 className="inline-flex items-center h-8 px-4 rounded-full text-[13px] font-medium transition-opacity hover:opacity-80"
                 style={{ background: '#1D1D1F', color: '#FFFFFF' }}
               >
@@ -105,7 +114,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
                 </p>
                 <ul className="flex flex-col gap-3">
                   {[
-                    ['Templates', '/app/create'],
+                    ['Templates', '/#templates'],
                     ['Dashboard', '/app'],
                     ['Upgrade',   '/app/upgrade'],
                   ].map(([label, href]) => (

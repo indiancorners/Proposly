@@ -21,8 +21,11 @@ export function useProposlyPro(proposalCount = 0): ProposlyProState {
   useEffect(() => {
     if (!isLoaded || !user) return
     let cancelled = false
+    let fetching = false
 
     const refresh = () => {
+      if (fetching) return
+      fetching = true
       getProfile(user.id)
         .then((profile) => {
           if (cancelled) return
@@ -38,6 +41,7 @@ export function useProposlyPro(proposalCount = 0): ProposlyProState {
         })
         .catch(console.error)
         .finally(() => {
+          fetching = false
           if (!cancelled) setIsLoading(false)
         })
     }

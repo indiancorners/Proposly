@@ -1,21 +1,16 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import { AppSidebar } from './AppSidebar'
 import { MobileTopBar, MobileBottomNav } from './MobileNav'
-import { useProposals } from '@/hooks/useProposals'
-import { useProposlyPro } from '@/hooks/useProposlyPro'
+import { AppDataProvider, useAppData } from '@/context/AppDataContext'
 
-export function AppLayout() {
-  const { proposals } = useProposals()
-  const { isPro } = useProposlyPro(proposals.length)
+function AppShell() {
+  const { isPro, proposals } = useAppData()
   const count = proposals.length
   const { pathname } = useLocation()
 
-  // The wizard (create/edit) is a focused full-screen editor with its own chrome —
-  // render it bare, without the dashboard sidebar or mobile nav bars.
+  // Wizard is a full-screen editor with its own chrome — render it bare.
   const isEditor = pathname.startsWith('/app/create') || pathname.startsWith('/app/edit')
-  if (isEditor) {
-    return <Outlet />
-  }
+  if (isEditor) return <Outlet />
 
   return (
     <div className="flex h-dvh overflow-hidden">
@@ -28,5 +23,13 @@ export function AppLayout() {
         <MobileBottomNav />
       </div>
     </div>
+  )
+}
+
+export function AppLayout() {
+  return (
+    <AppDataProvider>
+      <AppShell />
+    </AppDataProvider>
   )
 }

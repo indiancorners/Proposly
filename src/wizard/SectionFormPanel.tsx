@@ -9,7 +9,7 @@ import { CaseStudiesForm } from './forms/CaseStudiesForm'
 import { ProcessForm } from './forms/ProcessForm'
 import { TermsForm } from './forms/TermsForm'
 import type { SectionData, SectionType } from '@/types'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { clsx } from 'clsx'
 
 interface SectionFormPanelProps {
@@ -19,6 +19,14 @@ interface SectionFormPanelProps {
 
 export function SectionFormPanel({ sections, onUpdate }: SectionFormPanelProps) {
   const [activeType, setActiveType] = useState<SectionType>(sections[0]?.type ?? 'cover')
+
+  // Reset the active tab when the sections list changes (e.g. category change removes
+  // the currently-active section type, leaving a stale/unrendered tab selected).
+  useEffect(() => {
+    if (!sections.find((s) => s.type === activeType)) {
+      setActiveType(sections[0]?.type ?? 'cover')
+    }
+  }, [sections, activeType])
 
   const activeSection = sections.find((s) => s.type === activeType) ?? sections[0]
 

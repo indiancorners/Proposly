@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useBlocker } from 'react-router-dom'
 import { useUser } from '@clerk/clerk-react'
 import { ProposalEditorLayout } from '@/layouts/ProposalEditorLayout'
 import { ThemePickerStep } from '@/wizard/ThemePickerStep'
@@ -70,6 +70,7 @@ function WizardContent({
   const {
     step,
     proposal,
+    isDirty,
     isSaving,
     setStep,
     setTheme,
@@ -79,6 +80,11 @@ function WizardContent({
     saveProposal,
     patchProposal,
   } = useWizardStore(initialProposal, userId)
+
+  // Warn before navigating away with unsaved changes (SPA navigation).
+  useBlocker(({ currentLocation, nextLocation }) =>
+    isDirty && currentLocation.pathname !== nextLocation.pathname
+  )
 
   const stepIndicator = (
     <div className="flex items-center gap-1">

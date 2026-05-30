@@ -56,10 +56,17 @@ export function PublicProposalView() {
 
   if (notFound || !proposal) {
     return (
-      <div className="min-h-dvh flex items-center justify-center">
+      <div className="min-h-dvh flex flex-col items-center justify-center gap-4 px-6 text-center">
         <p className="text-sm text-placeholder">
           This proposal link is invalid or has been removed.
         </p>
+        <a
+          href="/"
+          className="text-sm font-semibold transition-opacity hover:opacity-70"
+          style={{ color: '#1D1D1F' }}
+        >
+          Create your own proposal with Proposly →
+        </a>
       </div>
     )
   }

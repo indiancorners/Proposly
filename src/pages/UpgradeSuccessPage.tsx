@@ -1,8 +1,35 @@
+import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Sparkles, ArrowRight } from 'lucide-react'
+import { useProposlyPro } from '@/hooks/useProposlyPro'
+import { getProfile } from '@/services/profileService'
+import { useUser } from '@clerk/clerk-react'
 
 export function UpgradeSuccessPage() {
+  const { isPro } = useProposlyPro()
+  const { user } = useUser()
+  const attemptsRef = useRef(0)
+
+  // Poll the profile until is_pro flips — the webhook may take a few seconds.
+  // Re-mount the hook's focus-refetch is not enough here since we're on the
+  // same tab. Max 5 attempts × 2s = 10s before giving up.
+  useEffect(() => {
+    if (isPro || !user) return
+    const interval = setInterval(async () => {
+      try {
+        const profile = await getProfile(user.id)
+        if (profile?.isPro || ++attemptsRef.current >= 5) clearInterval(interval)
+        // The useProposlyPro hook's own focus-refetch will pick up the change on
+        // next visibilitychange; force a page reload if still stuck after polling.
+        if (attemptsRef.current >= 5 && !isPro) window.location.reload()
+      } catch {
+        clearInterval(interval)
+      }
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [isPro, user])
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-center px-6">
       <motion.div
