@@ -51,7 +51,7 @@ export function LandingPage() {
         <motion.div className="relative max-w-4xl mx-auto" initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease }}>
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[12px] font-semibold mb-10 tracking-wide" style={{ border: '1px solid rgba(37,99,235,0.18)', background: 'rgba(37,99,235,0.05)', color: '#2563EB' }}>
             <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#16A34A' }} />
-            Free to start · $20 for Pro, once
+            Free to start · Pro for $20, once
           </div>
           <h1 className="font-extrabold tracking-tight mb-6" style={{ fontSize: 'clamp(44px, 7.5vw, 92px)', lineHeight: 1.05, letterSpacing: '-0.04em', color: '#1D1D1F' }}>
             Agency-grade proposals.<br /><span style={{ color: '#2563EB' }}>Built in minutes.</span>
@@ -64,9 +64,9 @@ export function LandingPage() {
               Create your first proposal
               <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform duration-200" />
             </button>
-            <button onClick={() => document.getElementById('templates')?.scrollIntoView({ behavior: 'smooth' })} className="inline-flex items-center h-12 px-7 rounded-full text-[15px] font-semibold transition-all duration-200 hover:opacity-70" style={{ background: '#F5F5F7', color: '#1D1D1F', border: '1px solid #D2D2D7' }}>
+            <a href="#templates" className="inline-flex items-center h-12 px-7 rounded-full text-[15px] font-semibold transition-all duration-200 hover:opacity-70" style={{ background: '#F5F5F7', color: '#1D1D1F', border: '1px solid #D2D2D7' }}>
               See templates
-            </button>
+            </a>
           </div>
           <p className="mt-4 text-[12px]" style={{ color: '#86868B' }}>3 free proposals · No card needed</p>
         </motion.div>

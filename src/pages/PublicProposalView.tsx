@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { ProposalRenderer } from '@/renderer/ProposalRenderer'
 import { getProposalByLink } from '@/services/shareService'
 import { Spinner } from '@/ui/Spinner'
@@ -60,13 +60,13 @@ export function PublicProposalView() {
         <p className="text-sm text-placeholder">
           This proposal link is invalid or has been removed.
         </p>
-        <a
-          href="/"
+        <Link
+          to="/"
           className="text-sm font-semibold transition-opacity hover:opacity-70"
           style={{ color: '#1D1D1F' }}
         >
           Create your own proposal with Proposly →
-        </a>
+        </Link>
       </div>
     )
   }
@@ -87,9 +87,9 @@ export function PublicProposalView() {
       </div>
       <p className="mt-6 text-xs text-placeholder">
         Created with{' '}
-        <a href="/" className="underline hover:text-muted">
+        <Link to="/" className="underline hover:text-muted">
           Proposly
-        </a>
+        </Link>
       </p>
     </div>
   )

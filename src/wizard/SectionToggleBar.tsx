@@ -12,7 +12,7 @@ export function SectionToggleBar({ sections, onToggle }: SectionToggleBarProps) 
 
   return (
     <div className="flex flex-col gap-1">
-      <p className="text-xs font-semibold text-muted uppercase tracking-wide mb-2">Optional Sections</p>
+      <p className="text-[11px] font-semibold text-placeholder uppercase tracking-widest mb-2">Optional sections</p>
       <div className="flex flex-col gap-2">
         {OPTIONAL_SECTIONS.map((sectionType) => (
           <div key={sectionType} className="flex items-center justify-between py-2 border-b border-border last:border-0">

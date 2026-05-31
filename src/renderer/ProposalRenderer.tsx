@@ -12,7 +12,7 @@ import { ProposalPage } from './ProposalPage'
 import { ThemeContext, SectionContext } from './ThemeContext'
 import { themeRegistry } from '@/constants/themes'
 import type { ProposalData, SectionData, ThemeId } from '@/types'
-import { forwardRef, type CSSProperties } from 'react'
+import { forwardRef, memo, type CSSProperties } from 'react'
 
 interface ProposalRendererProps {
   proposal: ProposalData
@@ -44,7 +44,7 @@ function renderSection(section: SectionData, isInverted: boolean) {
   }
 }
 
-export const ProposalRenderer = forwardRef<HTMLDivElement, ProposalRendererProps>(
+export const ProposalRenderer = memo(forwardRef<HTMLDivElement, ProposalRendererProps>(
   ({ proposal, forExport }, ref) => {
     const theme = themeRegistry[proposal.theme as ThemeId]
 
@@ -86,5 +86,5 @@ export const ProposalRenderer = forwardRef<HTMLDivElement, ProposalRendererProps
       </ThemeContext.Provider>
     )
   }
-)
+))
 ProposalRenderer.displayName = 'ProposalRenderer'

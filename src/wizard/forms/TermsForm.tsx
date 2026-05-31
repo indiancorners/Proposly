@@ -29,7 +29,7 @@ export function TermsForm({ data, onChange }: TermsFormProps) {
         type="button"
         onClick={() => onChange({ ...data, body: DEFAULT_TERMS })}
       >
-        Load default terms
+        Load Default Terms
       </Button>
     </div>
   )

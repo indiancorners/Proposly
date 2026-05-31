@@ -4,7 +4,7 @@
 -- Proposals table
 CREATE TABLE IF NOT EXISTS proposals (
   id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id     TEXT,
+  user_id     TEXT        NOT NULL,
   status      TEXT        NOT NULL DEFAULT 'draft'
                           CHECK (status IN ('draft','sent','won','lost')),
   category    TEXT        NOT NULL DEFAULT 'general',
@@ -52,8 +52,9 @@ CREATE TRIGGER profiles_updated_at
 -- NOTE: RLS skipped — app-level user_id filtering used.
 -- Phase 5+ will add Clerk JWT template + Supabase RLS policies for defense-in-depth.
 
--- Migration for existing databases (safe to re-run, will no-op if already TEXT):
+-- Migrations for existing databases (run in Supabase SQL Editor):
 -- ALTER TABLE proposals ALTER COLUMN user_id TYPE TEXT;
+-- ALTER TABLE proposals ALTER COLUMN user_id SET NOT NULL;
 
 -- ─── Phase 4: shared_links (run in Supabase SQL Editor) ──────────────────────
 CREATE TABLE IF NOT EXISTS shared_links (

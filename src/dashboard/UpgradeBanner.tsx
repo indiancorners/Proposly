@@ -13,10 +13,10 @@ export function UpgradeBanner() {
         <Sparkles className="h-4 w-4 flex-shrink-0" style={{ color: '#86868B' }} />
         <div>
           <p className="text-[14px] font-semibold text-white">
-            You've reached the free limit
+            You've built 3 proposals — time to go unlimited.
           </p>
           <p className="text-[12px] mt-0.5" style={{ color: '#86868B' }}>
-            Upgrade to Pro for unlimited proposals, all templates, PDF export, and share links.
+            Unlimited proposals. All 5 templates. PDF export. Share links.
           </p>
         </div>
       </div>
