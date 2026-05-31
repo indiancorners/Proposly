@@ -79,6 +79,21 @@ These cost real time during the go-live. Each is a rule, with the mistake that e
     used black, and a `purple` gradient leaked into `ProBadge`/`upgrade`. → Primary actions are black
     (`variant="dark"` / `foreground`); blue is accent + Pro signal only; **no purple**. See Design system.
 
+11. **Debounced auto-save + manual save is a minefield.** Three separate bugs shipped together in
+    `useWizardStore`: (a) the debounce didn't reset because `isDirty` was the only dep and never
+    changed — fixed with a `lastChangedAt` tick dep; (b) auto-save and the manual Save button could
+    fire concurrent writes — fixed with a shared `isSavingRef`; (c) the response handler did
+    `setState({ proposal: saved })`, **replacing** the object and discarding edits typed during the
+    request — fixed by merging only `id`/`updatedAt`. → When a debounced save coexists with a manual
+    save: reset the timer on every change, guard concurrency with a ref, and **merge server fields,
+    never replace**. Also write derived ids (like `sharedLinkId`) back into the store or the next
+    auto-save nulls them.
+
+12. **Webhooks must UPSERT, not UPDATE.** The LS webhook did `update(...).eq('id', userId)`, which
+    returns 200/count=0 (no error) if the profile row doesn't exist yet — so a purchase before first
+    sign-in silently never granted Pro. → Use `upsert`. Generally: a webhook can arrive before the
+    app has created the row it targets.
+
 ## Architecture
 
 Pure Vite SPA (no server). React 19 + TypeScript + Tailwind v4 + react-router. Three external
@@ -103,35 +118,53 @@ Clerk is the identity provider; Supabase trusts Clerk via **native third-party a
 
 `src/services/` (`proposalService`, `profileService`, `shareService`) wrap all Supabase calls and
 always scope by user id. SQL lives in `supabase/` — run `schema.sql` then `rls.sql` in the SQL
-Editor on any new project. The webhook is `supabase/functions/lemonsqueezy-webhook/` (handles
-`order_created`; no cancel/refund downgrade handler yet).
+Editor on any new project. The webhook is `supabase/functions/lemonsqueezy-webhook/` — it **upserts**
+`{ id, is_pro: true }` on `order_created` (upsert, not update, so a purchase that arrives before the
+user's first sign-in still grants Pro). No cancel/refund downgrade handler yet.
+
+### Shared app data (avoid duplicate fetches)
+
+`src/context/AppDataContext.tsx` calls `useProposals()` + `useProposlyPro()` **once** and provides
+them to the whole `/app` subtree. `AppLayout` wraps its shell in `<AppDataProvider>`; `DashboardPage`
+and the sidebar read via `useAppData()` — **do not** call `useProposals`/`useProposlyPro` directly in
+app pages or you reintroduce the doubled-query bug. (The wizard is the exception — it's bare, see below.)
 
 ### Pro gating
 
-`useProposlyPro()` (`src/hooks/`) fetches the profile, exposes `isPro` / `isAtLimit` / `canExport`
-/ `canShare` / `canUseProTemplate`, and **re-fetches on tab focus** (so a purchase completed in the
-Lemon Squeezy tab reflects on return). `FREE_PROPOSAL_LIMIT = 3` is exported from there; the same
-limit is **also enforced server-side** in `proposalService.createProposal`. Free tier = the `folio`
-theme only; the other 4 themes are Pro (`tier` field in `src/constants/themes.ts`).
+`useProposlyPro()` (`src/hooks/`) fetches the profile, exposes `isPro` / `isLoading` / `isAtLimit` /
+`canExport` / `canShare` / `canUseProTemplate`, and **re-fetches on tab focus** (so a purchase
+completed in the Lemon Squeezy tab reflects on return; an in-flight `fetching` flag prevents stacked
+calls). `FREE_PROPOSAL_LIMIT = 3` is exported from there; the same limit is **also enforced
+server-side** in `proposalService.createProposal`. Free tier = the `folio` theme only; the other 4
+themes are Pro (`tier` field in `src/constants/themes.ts`).
 
 ### Wizard → renderer → export
 
 - **`src/wizard/`** — the 3-step create/edit flow. `useWizardStore` (in `src/hooks/`) holds wizard
-  state and auto-saves on a debounce. `ThemePickerStep` → `FormStep` (category + section toggles +
-  per-section forms in `wizard/forms/` and `wizard/fields/`) → `ReviewStep` (live preview +
-  `ExportPanel`). `ProGateOverlay` blanks Pro-only actions for free users.
-- **`src/renderer/`** — the themed proposal renderer. `ProposalRenderer` dispatches each section to a
-  `*Section` component and applies the theme's CSS vars. Has a `forExport` mode for capture.
-- **`src/lib/exportService.ts`** — `exportToPDF` / `exportToPNG` via html2canvas + jsPDF against the
-  renderer's ref.
+  state and auto-saves on a 2s debounce. **Save-layer invariants** (don't break these): the debounce
+  resets on every mutation via a `lastChangedAt` dep; an `isSavingRef` prevents auto-save + manual
+  save from running concurrently; both save paths **merge only server-derived fields** (`id`,
+  `updatedAt`) rather than replacing the whole proposal, so edits typed during an in-flight save
+  aren't lost; `patchProposal` writes back the `sharedLinkId` after sharing so the next auto-save
+  doesn't null it. Flow: `ThemePickerStep` → `FormStep` (category + section toggles + per-section
+  forms in `wizard/forms/` and `wizard/fields/`) → `ReviewStep` (live preview + `ExportPanel`).
+  `ProGateOverlay` blanks Pro-only actions for free users. `useBlocker` warns on navigating away dirty.
+- **`src/renderer/`** — the themed proposal renderer. `ProposalRenderer` (memoized) dispatches each
+  section to a `*Section` component and applies the theme's CSS vars. Has a `forExport` mode for capture.
+- **`src/lib/exportService.ts`** — `exportToPDF` / `exportToPNG`. **`html2canvas` + `jsPDF` are
+  dynamically `import()`ed** here so they're code-split out of the main bundle (~560 KB) and only
+  fetched when a user actually exports. Keep them lazy.
 
 ### Routing & layouts (`src/App.tsx`, `src/layouts/`)
 
-`createBrowserRouter`. Public routes use `PublicLayout`; `/share/:linkId` is `PublicProposalView`
-(anon). `/app/*` is wrapped in `AuthGuard` + `AppLayout`. **`AppLayout` renders the wizard routes
-(`/app/create`, `/app/edit/:id`) bare** (no sidebar/mobile nav) — the wizard is a focused
-full-screen editor via `ProposalEditorLayout`. Mobile: sidebar hides `< md`, replaced by
-`MobileTopBar` + `MobileBottomNav`.
+`createBrowserRouter`. Public routes use `PublicLayout` (`/`, `/terms`, `/privacy` → `LegalPage`);
+`/share/:linkId` is `PublicProposalView` (anon). `/app/*` is wrapped in `AuthGuard` + `AppLayout`.
+`AuthGuard` redirects unauthenticated users to `/sign-in?redirect=<intended-path>`, and `SignInPage`
+uses that as `forceRedirectUrl` so the post-login funnel lands where the user intended (e.g. straight
+into `/app/create`). **`AppLayout` renders the wizard routes (`/app/create`, `/app/edit/:id`) bare**
+(no sidebar/mobile nav) — the wizard is a focused full-screen editor via `ProposalEditorLayout`.
+Mobile: sidebar hides `< md`, replaced by `MobileTopBar` (avatar opens an account dropdown — never a
+one-tap sign-out) + `MobileBottomNav`.
 
 ## Design system (`src/ui/` — "DS_tools")
 
